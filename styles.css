@@ -40,7 +40,6 @@
   --nav-bg: rgba(2, 17, 34, 0.72);
 }
 
-/* PEONY BLUSH THEME */
 body.light-mode {
   --bg-main:
     radial-gradient(circle at top left, rgba(255, 228, 225, 0.95), transparent 30%),
@@ -74,6 +73,33 @@ body {
   min-height: 100vh;
   background: var(--bg-main);
   background-attachment: fixed;
+}
+
+body::-webkit-scrollbar,
+.lead-panel::-webkit-scrollbar,
+.filter-row::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+body::-webkit-scrollbar-track,
+.lead-panel::-webkit-scrollbar-track,
+.filter-row::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+
+body::-webkit-scrollbar-thumb,
+.lead-panel::-webkit-scrollbar-thumb,
+.filter-row::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0, 191, 255, 0.75), rgba(0, 140, 140, 0.65));
+  border-radius: 999px;
+}
+
+body.light-mode::-webkit-scrollbar-thumb,
+body.light-mode .lead-panel::-webkit-scrollbar-thumb,
+body.light-mode .filter-row::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d94f86, #ad1457);
 }
 
 button,
@@ -115,8 +141,6 @@ button {
 .round-md {
   border-radius: 18px;
 }
-
-/* HEADER */
 
 .topbar {
   display: flex;
@@ -162,8 +186,6 @@ button {
   color: var(--accent);
   font-weight: 600;
 }
-
-/* THEME TOGGLE */
 
 .theme-toggle {
   width: 104px;
@@ -215,8 +237,6 @@ body.light-mode .theme-toggle .toggle-pill {
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
-/* TAB SCREENS */
-
 .tab-screen {
   display: none;
 }
@@ -225,8 +245,6 @@ body.light-mode .theme-toggle .toggle-pill {
   display: block;
 }
 
-/* LIQUID SURFACE */
-
 .stat-card,
 .wide-card,
 .action-card,
@@ -234,7 +252,7 @@ body.light-mode .theme-toggle .toggle-pill {
 .mini-card,
 .search-card,
 .lead-card,
-.floating-add,
+.top-add-lead,
 .lead-panel,
 .compact-lead-item,
 .lead-detail-row,
@@ -254,7 +272,7 @@ body.light-mode .theme-toggle .toggle-pill {
 .mini-card::before,
 .search-card::before,
 .lead-card::before,
-.floating-add::before,
+.top-add-lead::before,
 .lead-panel::before,
 .compact-lead-item::before,
 .lead-detail-row::before {
@@ -276,7 +294,7 @@ body.light-mode .bottom-nav::before,
 body.light-mode .mini-card::before,
 body.light-mode .search-card::before,
 body.light-mode .lead-card::before,
-body.light-mode .floating-add::before,
+body.light-mode .top-add-lead::before,
 body.light-mode .lead-panel::before,
 body.light-mode .compact-lead-item::before,
 body.light-mode .lead-detail-row::before {
@@ -284,8 +302,6 @@ body.light-mode .lead-detail-row::before {
     linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 44%),
     radial-gradient(circle at top right, rgba(201, 0, 93, 0.15), transparent 38%);
 }
-
-/* DASHBOARD */
 
 .stats-grid {
   display: grid;
@@ -416,7 +432,9 @@ body.light-mode .wallet-emoji {
 }
 
 button.action-card,
-button.nav-item {
+button.nav-item,
+button.mini-card,
+button.top-add-lead {
   border: none;
   font-family: inherit;
 }
@@ -538,7 +556,26 @@ body.light-mode .activity-item {
   white-space: nowrap;
 }
 
-/* LEADS TAB */
+.top-add-lead {
+  width: 100%;
+  height: 54px;
+  margin-bottom: 14px;
+  border-radius: 20px;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.9), rgba(0, 140, 140, 0.78));
+  box-shadow: 0 14px 30px rgba(0, 191, 255, 0.22);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.top-add-lead i {
+  margin-right: 8px;
+}
+
+body.light-mode .top-add-lead {
+  background: linear-gradient(135deg, #d94f86, #ad1457);
+  box-shadow: 0 14px 30px rgba(173, 20, 87, 0.24);
+}
 
 .lead-summary-grid {
   display: grid;
@@ -553,9 +590,11 @@ body.light-mode .activity-item {
   display: flex;
   align-items: center;
   gap: 12px;
+  color: var(--text-main);
+  text-align: left;
 }
 
-.clickable-card {
+.summary-card {
   cursor: pointer;
 }
 
@@ -623,11 +662,16 @@ body.light-mode .activity-item {
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 8px;
-  margin-bottom: 6px;
-  scrollbar-width: none;
+  margin-bottom: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) rgba(255,255,255,0.06);
 }
 
-.filter-row::-webkit-scrollbar {
+.filter-row.hidden {
+  display: none;
+}
+
+.section-head.hidden {
   display: none;
 }
 
@@ -712,6 +756,11 @@ body.light-mode .status-badge.new {
   background: rgba(255, 255, 255, 0.34);
 }
 
+.status-badge.contacted {
+  color: #8fd3ff;
+  background: rgba(143, 211, 255, 0.12);
+}
+
 .status-badge.negotiating {
   color: #ffe08a;
   background: rgba(255, 193, 7, 0.12);
@@ -730,6 +779,16 @@ body.light-mode .status-badge.negotiating {
 body.light-mode .status-badge.quoted {
   color: #086b3a;
   background: rgba(190, 255, 220, 0.38);
+}
+
+.status-badge.closed {
+  color: #b7ffbd;
+  background: rgba(55, 214, 122, 0.18);
+}
+
+.status-badge.lost {
+  color: #ff9a9a;
+  background: rgba(255, 95, 95, 0.12);
 }
 
 .lead-info {
@@ -766,6 +825,7 @@ body.light-mode .lead-note {
   gap: 9px;
 }
 
+.lead-actions a,
 .lead-actions button {
   border: 1px solid var(--panel-border);
   background: var(--icon-bg);
@@ -773,6 +833,8 @@ body.light-mode .lead-note {
   border-radius: 15px;
   padding: 10px 6px;
   font-size: 12.5px;
+  text-decoration: none;
+  text-align: center;
 }
 
 .lead-actions i {
@@ -780,30 +842,11 @@ body.light-mode .lead-note {
   margin-right: 4px;
 }
 
-.floating-add {
-  width: 100%;
-  margin-top: 16px;
-  height: 54px;
-  border: 1px solid var(--panel-border);
-  border-radius: 20px;
-  color: #ffffff;
-  background: linear-gradient(135deg, rgba(0, 191, 255, 0.9), rgba(0, 140, 140, 0.78));
-  box-shadow: 0 14px 30px rgba(0, 191, 255, 0.22);
-  font-size: 15px;
-  font-weight: 750;
+.empty-state {
+  padding: 22px 16px;
+  text-align: center;
+  color: var(--text-sub);
 }
-
-body.light-mode .floating-add {
-  color: #ffffff;
-  background: linear-gradient(135deg, #d94f86, #ad1457);
-  box-shadow: 0 14px 30px rgba(173, 20, 87, 0.24);
-}
-
-.floating-add i {
-  margin-right: 8px;
-}
-
-/* LEAD LIST + DETAIL OVERLAY */
 
 .lead-overlay {
   position: fixed;
@@ -833,6 +876,8 @@ body.light-mode .floating-add {
   box-shadow: var(--panel-shadow);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) rgba(255,255,255,0.06);
 }
 
 .lead-panel > * {
@@ -988,8 +1033,6 @@ body.light-mode .lead-edit-form textarea {
   resize: vertical;
 }
 
-/* BOTTOM NAV */
-
 .bottom-nav {
   position: fixed;
   left: 50%;
@@ -1047,8 +1090,6 @@ body.light-mode .nav-item.active {
     0 12px 24px rgba(173, 20, 87, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.42);
 }
-
-/* RESPONSIVE */
 
 @media (max-width: 390px) {
   .app-shell {
