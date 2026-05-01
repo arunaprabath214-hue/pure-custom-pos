@@ -234,144 +234,66 @@
 
     <!-- LEADS TAB -->
     <section class="tab-screen" id="leadsScreen">
+      <button class="top-add-lead glass" id="addLeadBtn">
+        <i class="bi bi-plus-lg"></i>
+        Add New Lead
+      </button>
+
       <div class="lead-summary-grid">
-        <div class="mini-card glass round-lg">
+        <button class="mini-card glass round-lg summary-card" data-summary-filter="all">
           <div class="mini-icon"><i class="bi bi-people"></i></div>
           <div>
-            <div class="mini-value">42</div>
+            <div class="mini-value" id="totalLeadCount">00</div>
             <div class="mini-label">Total Leads</div>
           </div>
-        </div>
+        </button>
 
-        <div class="mini-card glass round-lg">
+        <button class="mini-card glass round-lg summary-card" data-summary-filter="New">
           <div class="mini-icon"><i class="bi bi-stars"></i></div>
           <div>
-            <div class="mini-value">09</div>
+            <div class="mini-value" id="newLeadCount">00</div>
             <div class="mini-label">New Leads</div>
           </div>
-        </div>
+        </button>
 
-        <div class="mini-card glass round-lg">
+        <button class="mini-card glass round-lg summary-card" data-summary-filter="followups">
           <div class="mini-icon"><i class="bi bi-calendar-check"></i></div>
           <div>
-            <div class="mini-value">05</div>
-            <div class="mini-label">Follow-ups</div>
+            <div class="mini-value" id="followUpCount">00</div>
+            <div class="mini-label">Follow-Ups</div>
           </div>
-        </div>
+        </button>
 
-        <div class="mini-card glass round-lg">
+        <button class="mini-card glass round-lg summary-card" data-summary-filter="Quotation Sent">
           <div class="mini-icon"><i class="bi bi-file-earmark-text"></i></div>
           <div>
-            <div class="mini-value">14</div>
+            <div class="mini-value" id="quotationCount">00</div>
             <div class="mini-label">Quotations</div>
           </div>
-        </div>
+        </button>
       </div>
 
       <div class="search-card glass round-lg">
         <i class="bi bi-search"></i>
-        <input type="text" placeholder="Search business, phone, location..." />
+        <input id="leadSearchInput" type="text" placeholder="Search name, phone, location..." />
       </div>
 
-      <div class="filter-row">
-        <button class="filter-chip active">All</button>
-        <button class="filter-chip">New</button>
-        <button class="filter-chip">Contacted</button>
-        <button class="filter-chip">Quotation Sent</button>
-        <button class="filter-chip">Negotiating</button>
-        <button class="filter-chip">Closed</button>
-        <button class="filter-chip">Lost</button>
-      </div>
-
-      <div class="section-head">
+      <div class="section-head" id="leadPipelineHead">
         <h3>Lead Pipeline</h3>
-        <span>Priority first</span>
+        <span id="pipelineCount">All leads</span>
       </div>
 
-      <div class="lead-list">
-        <div class="lead-card glass round-lg">
-          <div class="lead-top">
-            <div>
-              <div class="lead-name">Cuppa Café</div>
-              <div class="lead-person">Kasun Perera • Kandy</div>
-            </div>
-            <span class="status-badge negotiating">Negotiating</span>
-          </div>
-
-          <div class="lead-info">
-            <div><i class="bi bi-telephone"></i> 077 123 4567</div>
-            <div><i class="bi bi-shop"></i> Café</div>
-            <div><i class="bi bi-calendar-event"></i> Follow-up: 06 May 2026</div>
-          </div>
-
-          <div class="lead-note">
-            Needs 500ml + 1000ml quotation with custom label design.
-          </div>
-
-          <div class="lead-actions">
-            <button><i class="bi bi-telephone-fill"></i> Call</button>
-            <button><i class="bi bi-file-earmark-text"></i> Quotation</button>
-            <button><i class="bi bi-pencil-square"></i> Edit</button>
-          </div>
-        </div>
-
-        <div class="lead-card glass round-lg">
-          <div class="lead-top">
-            <div>
-              <div class="lead-name">Royal Event House</div>
-              <div class="lead-person">Nadeesha Silva • Colombo</div>
-            </div>
-            <span class="status-badge quoted">Quotation Sent</span>
-          </div>
-
-          <div class="lead-info">
-            <div><i class="bi bi-telephone"></i> 071 987 6543</div>
-            <div><i class="bi bi-calendar2-heart"></i> Event</div>
-            <div><i class="bi bi-calendar-event"></i> Follow-up: 08 May 2026</div>
-          </div>
-
-          <div class="lead-note">
-            Wants 1500ml bottles with cap printing for wedding event.
-          </div>
-
-          <div class="lead-actions">
-            <button><i class="bi bi-telephone-fill"></i> Call</button>
-            <button><i class="bi bi-file-earmark-text"></i> Quotation</button>
-            <button><i class="bi bi-pencil-square"></i> Edit</button>
-          </div>
-        </div>
-
-        <div class="lead-card glass round-lg">
-          <div class="lead-top">
-            <div>
-              <div class="lead-name">Hilltop Hotel</div>
-              <div class="lead-person">Manager • Nuwara Eliya</div>
-            </div>
-            <span class="status-badge new">New</span>
-          </div>
-
-          <div class="lead-info">
-            <div><i class="bi bi-telephone"></i> 076 222 8899</div>
-            <div><i class="bi bi-building"></i> Hotel</div>
-            <div><i class="bi bi-calendar-event"></i> Follow-up: Today</div>
-          </div>
-
-          <div class="lead-note">
-            Interested in recurring 500ml supply for room service branding.
-          </div>
-
-          <div class="lead-actions">
-            <button><i class="bi bi-telephone-fill"></i> Call</button>
-            <button><i class="bi bi-file-earmark-text"></i> Quotation</button>
-            <button><i class="bi bi-pencil-square"></i> Edit</button>
-          </div>
-        </div>
+      <div class="filter-row" id="leadFilterRow">
+        <button class="filter-chip active" data-status-filter="All">All</button>
+        <button class="filter-chip" data-status-filter="New">New</button>
+        <button class="filter-chip" data-status-filter="Contacted">Contacted</button>
+        <button class="filter-chip" data-status-filter="Quotation Sent">Quotation Sent</button>
+        <button class="filter-chip" data-status-filter="Negotiating">Negotiating</button>
+        <button class="filter-chip" data-status-filter="Closed">Closed</button>
+        <button class="filter-chip" data-status-filter="Lost">Lost</button>
       </div>
 
-      <button class="floating-add glass">
-        <i class="bi bi-plus-lg"></i>
-        Add New Lead
-      </button>
+      <div class="lead-list" id="leadPipelineList"></div>
     </section>
   </div>
 
