@@ -27,7 +27,7 @@
 
       <div class="theme-toggle glass">
         <div class="toggle-pill"></div>
-        <button id="lightBtn" aria-label="Light mode">
+        <button id="lightBtn" aria-label="Peony Blush theme">
           <i class="bi bi-brightness-high-fill"></i>
         </button>
         <button id="darkBtn" aria-label="Dark mode">
@@ -110,7 +110,7 @@
           <p>Create<br />Quotation</p>
         </button>
 
-        <button class="action-card glass round-lg">
+        <button class="action-card glass round-lg" data-open-tab="customers">
           <div class="icon-wrap">
             <i class="bi bi-person-vcard"></i>
           </div>
@@ -203,32 +203,6 @@
           </div>
           <div class="activity-time">9:45 AM</div>
         </div>
-
-        <div class="activity-item">
-          <div class="activity-left">
-            <div class="list-icon">
-              <i class="bi bi-person-plus"></i>
-            </div>
-            <div>
-              <div class="activity-title">Customer TechNova Solutions added</div>
-              <div class="activity-sub">Customer record</div>
-            </div>
-          </div>
-          <div class="activity-time">9:12 AM</div>
-        </div>
-
-        <div class="activity-item">
-          <div class="activity-left">
-            <div class="list-icon">
-              <i class="bi bi-exclamation-diamond"></i>
-            </div>
-            <div>
-              <div class="activity-title">Stock alert: Matte Label Roll 60mm</div>
-              <div class="activity-sub">Inventory alert</div>
-            </div>
-          </div>
-          <div class="activity-time">8:30 AM</div>
-        </div>
       </div>
     </section>
 
@@ -275,7 +249,12 @@
 
       <div class="search-card glass round-lg">
         <i class="bi bi-search"></i>
-        <input id="leadSearchInput" type="text" placeholder="Search name, phone, location..." />
+        <input
+          id="leadSearchInput"
+          type="text"
+          placeholder="Search name, phone, location..."
+          autocomplete="off"
+        />
       </div>
 
       <div class="section-head" id="leadPipelineHead">
@@ -295,41 +274,98 @@
 
       <div class="lead-list" id="leadPipelineList"></div>
     </section>
+
+    <!-- CUSTOMERS TAB -->
+    <section class="tab-screen" id="customersScreen">
+      <button class="top-add-lead glass" id="addCustomerBtn">
+        <i class="bi bi-plus-lg"></i>
+        Add New Customer
+      </button>
+
+      <div class="lead-summary-grid">
+        <button class="mini-card glass round-lg customer-summary-card" data-customer-filter="all">
+          <div class="mini-icon"><i class="bi bi-people"></i></div>
+          <div>
+            <div class="mini-value" id="totalCustomerCount">00</div>
+            <div class="mini-label">Total Customers</div>
+          </div>
+        </button>
+
+        <button class="mini-card glass round-lg customer-summary-card" data-customer-filter="Active">
+          <div class="mini-icon"><i class="bi bi-check2-circle"></i></div>
+          <div>
+            <div class="mini-value" id="activeCustomerCount">00</div>
+            <div class="mini-label">Active</div>
+          </div>
+        </button>
+
+        <button class="mini-card glass round-lg customer-summary-card" data-customer-filter="lowStock">
+          <div class="mini-icon"><i class="bi bi-tags"></i></div>
+          <div>
+            <div class="mini-value" id="lowStockCustomerCount">00</div>
+            <div class="mini-label">Low Stock</div>
+          </div>
+        </button>
+
+        <button class="mini-card glass round-lg customer-summary-card" data-customer-filter="pending">
+          <div class="mini-icon"><i class="bi bi-credit-card"></i></div>
+          <div>
+            <div class="mini-value" id="pendingCustomerCount">00</div>
+            <div class="mini-label">Pending Pay</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="search-card glass round-lg">
+        <i class="bi bi-search"></i>
+        <input
+          id="customerSearchInput"
+          type="text"
+          placeholder="Search customer, phone, location..."
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="section-head" id="customerListHead">
+        <h3>Customer Accounts</h3>
+        <span id="customerListCount">All customers</span>
+      </div>
+
+      <div class="filter-row" id="customerFilterRow">
+        <button class="customer-filter-chip active" data-customer-status="All">All</button>
+        <button class="customer-filter-chip" data-customer-status="Active">Active</button>
+        <button class="customer-filter-chip" data-customer-status="Paused">Paused</button>
+        <button class="customer-filter-chip" data-customer-status="High Value">High Value</button>
+        <button class="customer-filter-chip" data-customer-status="Pending Pay">Pending Pay</button>
+      </div>
+
+      <div class="customer-list" id="customerList"></div>
+    </section>
   </div>
 
   <div class="bottom-nav glass">
     <button class="nav-item active" data-tab="dashboard">
-      <div class="nav-icon">
-        <i class="bi bi-grid-1x2-fill"></i>
-      </div>
+      <div class="nav-icon"><i class="bi bi-grid-1x2-fill"></i></div>
       <div>Dashboard</div>
     </button>
 
     <button class="nav-item" data-tab="leads">
-      <div class="nav-icon">
-        <i class="bi bi-megaphone"></i>
-      </div>
+      <div class="nav-icon"><i class="bi bi-megaphone"></i></div>
       <div>Leads</div>
     </button>
 
     <button class="nav-item" data-tab="customers">
-      <div class="nav-icon">
-        <i class="bi bi-people"></i>
-      </div>
+      <div class="nav-icon"><i class="bi bi-people"></i></div>
       <div>Customers</div>
     </button>
 
     <button class="nav-item" data-tab="cash">
-      <div class="nav-icon">
-        <i class="bi bi-wallet2"></i>
-      </div>
+      <div class="nav-icon"><i class="bi bi-wallet2"></i></div>
       <div>Cash Balance</div>
     </button>
 
     <button class="nav-item" data-tab="more">
-      <div class="nav-icon">
-        <i class="bi bi-three-dots"></i>
-      </div>
+      <div class="nav-icon"><i class="bi bi-three-dots"></i></div>
       <div>More</div>
     </button>
   </div>
