@@ -27,7 +27,7 @@
 
       <div class="theme-toggle glass">
         <div class="toggle-pill"></div>
-        <button id="lightBtn" aria-label="Light mode">
+        <button id="lightBtn" aria-label="Peony Blush theme">
           <i class="bi bi-brightness-high-fill"></i>
         </button>
         <button id="darkBtn" aria-label="Dark mode">
@@ -241,7 +241,9 @@
 
       <div class="lead-summary-grid">
         <button class="mini-card glass round-lg summary-card" data-summary-filter="all">
-          <div class="mini-icon"><i class="bi bi-people"></i></div>
+          <div class="mini-icon">
+            <i class="bi bi-people"></i>
+          </div>
           <div>
             <div class="mini-value" id="totalLeadCount">00</div>
             <div class="mini-label">Total Leads</div>
@@ -249,7 +251,9 @@
         </button>
 
         <button class="mini-card glass round-lg summary-card" data-summary-filter="New">
-          <div class="mini-icon"><i class="bi bi-stars"></i></div>
+          <div class="mini-icon">
+            <i class="bi bi-stars"></i>
+          </div>
           <div>
             <div class="mini-value" id="newLeadCount">00</div>
             <div class="mini-label">New Leads</div>
@@ -257,7 +261,9 @@
         </button>
 
         <button class="mini-card glass round-lg summary-card" data-summary-filter="followups">
-          <div class="mini-icon"><i class="bi bi-calendar-check"></i></div>
+          <div class="mini-icon">
+            <i class="bi bi-calendar-check"></i>
+          </div>
           <div>
             <div class="mini-value" id="followUpCount">00</div>
             <div class="mini-label">Follow-Ups</div>
@@ -265,7 +271,9 @@
         </button>
 
         <button class="mini-card glass round-lg summary-card" data-summary-filter="Quotation Sent">
-          <div class="mini-icon"><i class="bi bi-file-earmark-text"></i></div>
+          <div class="mini-icon">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
           <div>
             <div class="mini-value" id="quotationCount">00</div>
             <div class="mini-label">Quotations</div>
@@ -275,7 +283,12 @@
 
       <div class="search-card glass round-lg">
         <i class="bi bi-search"></i>
-        <input id="leadSearchInput" type="text" placeholder="Search name, phone, location..." />
+        <input
+          id="leadSearchInput"
+          type="text"
+          placeholder="Search name, phone, location..."
+          autocomplete="off"
+        />
       </div>
 
       <div class="section-head" id="leadPipelineHead">
