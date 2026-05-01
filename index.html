@@ -1,213 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pure Custom Creation POS</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="manifest" href="manifest.json" />
-</head>
+.brand-mark {
+  font-size: 32px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -1.4px;
+  color: var(--text-main);
+}
 
-<body class="dark-mode">
-  <div class="app-shell">
-    <div class="topbar">
-      <div class="brand">
-        <img src="assets/logo.png" alt="Pure Custom Creation Logo" />
-        <h1 class="page-heading">Dashboard</h1>
-        <div class="page-title" id="todayDate">Today’s Business Snapshot</div>
-      </div>
+.brand-sub {
+  margin-top: 4px;
+  margin-bottom: 18px;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--text-sub);
+  font-weight: 650;
+}
 
-      <div class="theme-toggle glass">
-        <div class="toggle-pill"></div>
-        <button id="lightBtn" aria-label="Light mode">☀</button>
-        <button id="darkBtn" aria-label="Dark mode">☾</button>
-      </div>
-    </div>
+.icon-wrap i,
+.list-icon i,
+.nav-icon i {
+  font-size: 1em;
+  line-height: 1;
+}
 
-    <div class="stats-grid">
-      <div class="stat-card glass round-lg">
-        <div class="icon-wrap">↗</div>
-        <div class="card-label">Today Revenue</div>
-        <div class="card-value">Rs. 128,450.00</div>
-        <div class="card-meta">↗ 18.6% vs yesterday</div>
-      </div>
+.nav-icon {
+  font-size: 18px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
 
-      <div class="stat-card glass round-lg">
-        <div class="icon-wrap">▣</div>
-        <div class="card-label">Pending Payments</div>
-        <div class="card-value">Rs. 64,780.00</div>
-        <div class="card-meta">• 12 Invoices</div>
-      </div>
+.wallet-emoji {
+  width: 68px;
+  height: 68px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--panel-border);
+  font-size: 34px;
+}
 
-      <div class="stat-card glass round-lg">
-        <div class="icon-wrap">◫</div>
-        <div class="card-label">Active Orders</div>
-        <div class="card-value">24</div>
-        <div class="card-meta">• 8 In Progress</div>
-      </div>
-
-      <div class="stat-card glass round-lg">
-        <div class="icon-wrap">◇</div>
-        <div class="card-label">Label Stock Alerts</div>
-        <div class="card-value">7</div>
-        <div class="card-meta">• Needs Attention</div>
-      </div>
-    </div>
-
-    <div class="wide-card glass round-lg">
-      <div>
-        <div class="icon-wrap">◧</div>
-        <div class="card-label">Cash Balance</div>
-        <div class="card-value">Rs. 86,240.00</div>
-        <div class="card-meta">• Available now</div>
-      </div>
-      <div class="wallet-emoji">👛</div>
-    </div>
-
-    <div class="section-head">
-      <h3>Quick Actions</h3>
-    </div>
-
-    <div class="actions-grid">
-      <div class="action-card glass round-lg">
-        <div class="icon-wrap">＋</div>
-        <p>New Lead</p>
-      </div>
-
-      <div class="action-card glass round-lg">
-        <div class="icon-wrap">▤</div>
-        <p>Create<br />Quotation</p>
-      </div>
-
-      <div class="action-card glass round-lg">
-        <div class="icon-wrap">◎</div>
-        <p>Add<br />Customer</p>
-      </div>
-
-      <div class="action-card glass round-lg">
-        <div class="icon-wrap">☰</div>
-        <p>New Bill</p>
-      </div>
-    </div>
-
-    <div class="section-head">
-      <h3>Monthly Insights</h3>
-      <span>May 2025⌄</span>
-    </div>
-
-    <div class="section-card glass round-lg">
-      <div class="insight-row">
-        <div class="insight-left">
-          <div class="list-icon">◔</div>
-          <div class="insight-name">Revenue</div>
-        </div>
-        <div class="insight-value">Rs. 3,245,780.00 <span class="up">↑</span></div>
-      </div>
-
-      <div class="insight-row">
-        <div class="insight-left">
-          <div class="list-icon">▣</div>
-          <div class="insight-name">Expenses</div>
-        </div>
-        <div class="insight-value">Rs. 1,245,360.00 <span class="down">↓</span></div>
-      </div>
-
-      <div class="insight-row">
-        <div class="insight-left">
-          <div class="list-icon">↗</div>
-          <div class="insight-name">Profit</div>
-        </div>
-        <div class="insight-value">Rs. 2,000,420.00 <span class="up">↑</span></div>
-      </div>
-
-      <div class="insight-row">
-        <div class="insight-left">
-          <div class="list-icon">◇</div>
-          <div class="insight-name">Avg Supply</div>
-        </div>
-        <div class="insight-value">Rs. 420.00 <span class="up">↑</span></div>
-      </div>
-    </div>
-
-    <div class="section-head">
-      <h3>Recent Activity</h3>
-      <span>View All ›</span>
-    </div>
-
-    <div class="section-card glass round-lg">
-      <div class="activity-item">
-        <div class="activity-left">
-          <div class="list-icon">➤</div>
-          <div>
-            <div class="activity-title">Quotation sent to Softwear (Pvt) Ltd.</div>
-            <div class="activity-sub">QTN-2025-0519-012</div>
-          </div>
-        </div>
-        <div class="activity-time">10:24 AM</div>
-      </div>
-
-      <div class="activity-item">
-        <div class="activity-left">
-          <div class="list-icon">⊞</div>
-          <div>
-            <div class="activity-title">New order #ORD-2025-0519-018 created</div>
-            <div class="activity-sub">Order update</div>
-          </div>
-        </div>
-        <div class="activity-time">9:45 AM</div>
-      </div>
-
-      <div class="activity-item">
-        <div class="activity-left">
-          <div class="list-icon">◎</div>
-          <div>
-            <div class="activity-title">Customer TechNova Solutions added</div>
-            <div class="activity-sub">Customer record</div>
-          </div>
-        </div>
-        <div class="activity-time">9:12 AM</div>
-      </div>
-
-      <div class="activity-item">
-        <div class="activity-left">
-          <div class="list-icon">◇</div>
-          <div>
-            <div class="activity-title">Stock alert: Matte Label Roll 60mm</div>
-            <div class="activity-sub">Inventory alert</div>
-          </div>
-        </div>
-        <div class="activity-time">8:30 AM</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bottom-nav glass">
-    <div class="nav-item active">
-      <div>▦</div>
-      <div>Dashboard</div>
-    </div>
-
-    <div class="nav-item">
-      <div>◎</div>
-      <div>Leads</div>
-    </div>
-
-    <div class="nav-item">
-      <div>◉</div>
-      <div>Customers</div>
-    </div>
-
-    <div class="nav-item">
-      <div>◧</div>
-      <div>Cash Balance</div>
-    </div>
-
-    <div class="nav-item">
-      <div>•••</div>
-      <div>More</div>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
-</body>
-</html>
+.app-shell {
+  padding-bottom: 132px;
+}
