@@ -460,9 +460,6 @@ function createLeadOverlay() {
 
   document.body.appendChild(overlay);
 
-  overlay.addEventListener("click", (event) => {
-    if (event.target.id === "leadOverlay") closeLeadOverlay();
-  });
 }
 
 function openLeadOverlay() {
