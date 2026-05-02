@@ -980,9 +980,6 @@ function createCustomerOverlay() {
   if (document.getElementById("customerOverlay")) return;
 
   const overlay = document.createElement("div");
-  overlay.id = "customerOverlay";
-  overlay.className = "customer-overlay hidden";
-  overlay.innerHTML = `
     <div class="customer-panel glass">
       <div id="customerPanelContent"></div>
     </div>
