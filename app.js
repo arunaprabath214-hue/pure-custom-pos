@@ -459,7 +459,6 @@ function createLeadOverlay() {
   `;
 
   document.body.appendChild(overlay);
-
 }
 
 function openLeadOverlay() {
@@ -980,16 +979,15 @@ function createCustomerOverlay() {
   if (document.getElementById("customerOverlay")) return;
 
   const overlay = document.createElement("div");
+  overlay.id = "customerOverlay";
+  overlay.className = "customer-overlay hidden";
+  overlay.innerHTML = `
     <div class="customer-panel glass">
       <div id="customerPanelContent"></div>
     </div>
   `;
 
   document.body.appendChild(overlay);
-
-  overlay.addEventListener("click", (event) => {
-    if (event.target.id === "customerOverlay") closeCustomerOverlay();
-  });
 }
 
 function openCustomerOverlay() {
