@@ -287,7 +287,7 @@
     <section class="tab-screen" id="customersScreen">
       <button class="top-add-lead glass" id="addCustomerBtn">
         <i class="bi bi-plus-lg"></i>
-        Add New Customer
+        Add Customer From Closed Lead
       </button>
 
       <div class="lead-summary-grid">
@@ -301,13 +301,13 @@
           </div>
         </button>
 
-        <button class="mini-card glass round-lg customer-summary-card" data-customer-filter="Active">
+        <button class="mini-card glass round-lg customer-summary-card" data-customer-filter="followup">
           <div class="mini-icon">
-            <i class="bi bi-check2-circle"></i>
+            <i class="bi bi-calendar-heart"></i>
           </div>
           <div>
-            <div class="mini-value" id="activeCustomerCount">00</div>
-            <div class="mini-label">Active</div>
+            <div class="mini-value" id="followupCustomerCount">00</div>
+            <div class="mini-label">Follow-up</div>
           </div>
         </button>
 
@@ -326,7 +326,7 @@
             <i class="bi bi-credit-card"></i>
           </div>
           <div>
-            <div class="mini-value" id="pendingCustomerCount">00</div>
+            <div class="mini-value pending-value" id="pendingCustomerTotal">Rs. 0</div>
             <div class="mini-label">Pending Pay</div>
           </div>
         </button>
@@ -345,14 +345,6 @@
       <div class="section-head" id="customerListHead">
         <h3>Customer Accounts</h3>
         <span id="customerListCount">All customers</span>
-      </div>
-
-      <div class="filter-row" id="customerFilterRow">
-        <button class="customer-filter-chip active" data-customer-status="All">All</button>
-        <button class="customer-filter-chip" data-customer-status="Active">Active</button>
-        <button class="customer-filter-chip" data-customer-status="Paused">Paused</button>
-        <button class="customer-filter-chip" data-customer-status="High Value">High Value</button>
-        <button class="customer-filter-chip" data-customer-status="Pending Pay">Pending Pay</button>
       </div>
 
       <div class="customer-list" id="customerList"></div>
