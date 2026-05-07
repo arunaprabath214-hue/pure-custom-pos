@@ -78,6 +78,7 @@ body {
 body::-webkit-scrollbar,
 .lead-panel::-webkit-scrollbar,
 .customer-panel::-webkit-scrollbar,
+.cash-panel::-webkit-scrollbar,
 .filter-row::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -86,6 +87,7 @@ body::-webkit-scrollbar,
 body::-webkit-scrollbar-track,
 .lead-panel::-webkit-scrollbar-track,
 .customer-panel::-webkit-scrollbar-track,
+.cash-panel::-webkit-scrollbar-track,
 .filter-row::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.06);
   border-radius: 999px;
@@ -94,6 +96,7 @@ body::-webkit-scrollbar-track,
 body::-webkit-scrollbar-thumb,
 .lead-panel::-webkit-scrollbar-thumb,
 .customer-panel::-webkit-scrollbar-thumb,
+.cash-panel::-webkit-scrollbar-thumb,
 .filter-row::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, rgba(0, 191, 255, 0.75), rgba(0, 140, 140, 0.65));
   border-radius: 999px;
@@ -102,6 +105,7 @@ body::-webkit-scrollbar-thumb,
 body.light-mode::-webkit-scrollbar-thumb,
 body.light-mode .lead-panel::-webkit-scrollbar-thumb,
 body.light-mode .customer-panel::-webkit-scrollbar-thumb,
+body.light-mode .cash-panel::-webkit-scrollbar-thumb,
 body.light-mode .filter-row::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #d94f86, #ad1457);
 }
@@ -265,13 +269,16 @@ body.light-mode .theme-toggle .toggle-pill {
 .search-card,
 .lead-card,
 .customer-card,
+.cash-entry-card,
 .top-add-lead,
 .lead-panel,
 .customer-panel,
+.cash-panel,
 .compact-lead-item,
 .compact-customer-item,
 .lead-detail-row,
 .customer-detail-row,
+.cash-detail-row,
 .panel-close-btn,
 .panel-back-btn,
 .panel-edit-btn,
@@ -280,7 +287,8 @@ body.light-mode .theme-toggle .toggle-pill {
 .reminder-card,
 .closed-lead-item,
 .customer-price-grid,
-.customer-mini-alert {
+.customer-mini-alert,
+.cash-turnover-card {
   position: relative;
   overflow: hidden;
 }
@@ -294,18 +302,22 @@ body.light-mode .theme-toggle .toggle-pill {
 .search-card::before,
 .lead-card::before,
 .customer-card::before,
+.cash-entry-card::before,
 .top-add-lead::before,
 .lead-panel::before,
 .customer-panel::before,
+.cash-panel::before,
 .compact-lead-item::before,
 .compact-customer-item::before,
 .lead-detail-row::before,
 .customer-detail-row::before,
+.cash-detail-row::before,
 .order-history-card::before,
 .reminder-card::before,
 .closed-lead-item::before,
 .customer-price-grid::before,
-.customer-mini-alert::before {
+.customer-mini-alert::before,
+.cash-turnover-card::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -325,18 +337,22 @@ body.light-mode .mini-card::before,
 body.light-mode .search-card::before,
 body.light-mode .lead-card::before,
 body.light-mode .customer-card::before,
+body.light-mode .cash-entry-card::before,
 body.light-mode .top-add-lead::before,
 body.light-mode .lead-panel::before,
 body.light-mode .customer-panel::before,
+body.light-mode .cash-panel::before,
 body.light-mode .compact-lead-item::before,
 body.light-mode .compact-customer-item::before,
 body.light-mode .lead-detail-row::before,
 body.light-mode .customer-detail-row::before,
+body.light-mode .cash-detail-row::before,
 body.light-mode .order-history-card::before,
 body.light-mode .reminder-card::before,
 body.light-mode .closed-lead-item::before,
 body.light-mode .customer-price-grid::before,
-body.light-mode .customer-mini-alert::before {
+body.light-mode .customer-mini-alert::before,
+body.light-mode .cash-turnover-card::before {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 44%),
     radial-gradient(circle at top right, rgba(201, 0, 93, 0.15), transparent 38%);
@@ -629,7 +645,8 @@ body.light-mode .top-add-lead {
 }
 
 .summary-card,
-.customer-summary-card {
+.customer-summary-card,
+.cash-summary-card {
   cursor: pointer;
 }
 
@@ -715,7 +732,8 @@ body.light-mode .top-add-lead {
 }
 
 .filter-chip,
-.customer-filter-chip {
+.customer-filter-chip,
+.cash-filter-chip {
   flex: 0 0 auto;
   border: 1px solid var(--panel-border);
   background: var(--panel-bg);
@@ -728,29 +746,33 @@ body.light-mode .top-add-lead {
 }
 
 .filter-chip.active,
-.customer-filter-chip.active {
+.customer-filter-chip.active,
+.cash-filter-chip.active {
   color: #ffffff;
   background: linear-gradient(135deg, rgba(0, 191, 255, 0.95), rgba(0, 140, 140, 0.78));
   box-shadow: 0 10px 24px rgba(0, 191, 255, 0.22);
 }
 
 body.light-mode .filter-chip.active,
-body.light-mode .customer-filter-chip.active {
+body.light-mode .customer-filter-chip.active,
+body.light-mode .cash-filter-chip.active {
   color: #ffffff;
   background: linear-gradient(135deg, #d94f86, #ad1457);
   box-shadow: 0 10px 24px rgba(173, 20, 87, 0.22);
 }
 
-/* LEAD + CUSTOMER CARDS */
+/* LEAD + CUSTOMER + CASH CARDS */
 
 .lead-list,
-.customer-list {
+.customer-list,
+.cash-list {
   display: grid;
   gap: 14px;
 }
 
 .lead-card,
-.customer-card {
+.customer-card,
+.cash-entry-card {
   padding: 16px;
 }
 
@@ -763,13 +785,18 @@ body.light-mode .customer-filter-chip.active {
 .customer-stock,
 .customer-actions,
 .customer-price-grid,
-.customer-mini-alert {
+.customer-mini-alert,
+.cash-entry-top,
+.cash-entry-info,
+.cash-entry-note,
+.cash-entry-actions {
   position: relative;
   z-index: 1;
 }
 
 .lead-top,
-.customer-top {
+.customer-top,
+.cash-entry-top {
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -778,7 +805,8 @@ body.light-mode .customer-filter-chip.active {
 }
 
 .lead-name,
-.customer-name {
+.customer-name,
+.cash-entry-title {
   font-size: 18px;
   font-weight: 800;
   color: var(--text-main);
@@ -786,14 +814,16 @@ body.light-mode .customer-filter-chip.active {
 }
 
 .lead-person,
-.customer-person {
+.customer-person,
+.cash-entry-sub {
   margin-top: 4px;
   font-size: 13px;
   color: var(--text-sub);
 }
 
 .status-badge,
-.customer-badge {
+.customer-badge,
+.cash-badge {
   flex: 0 0 auto;
   border-radius: 999px;
   padding: 7px 10px;
@@ -818,7 +848,10 @@ body.light-mode .customer-filter-chip.active {
 }
 
 .status-badge.quoted,
-.customer-badge.active {
+.customer-badge.active,
+.cash-badge.income,
+.cash-badge.advance,
+.cash-badge.collection {
   color: #9df5cc;
   background: rgba(55, 214, 122, 0.12);
 }
@@ -831,7 +864,9 @@ body.light-mode .customer-filter-chip.active {
 
 .status-badge.lost,
 .customer-badge.paused,
-.customer-badge.pending-pay {
+.customer-badge.pending-pay,
+.cash-badge.expense,
+.cash-badge.credit {
   color: #ff9a9a;
   background: rgba(255, 95, 95, 0.12);
 }
@@ -847,7 +882,10 @@ body.light-mode .customer-filter-chip.active {
 }
 
 body.light-mode .status-badge.quoted,
-body.light-mode .customer-badge.active {
+body.light-mode .customer-badge.active,
+body.light-mode .cash-badge.income,
+body.light-mode .cash-badge.advance,
+body.light-mode .cash-badge.collection {
   color: #086b3a;
   background: rgba(190, 255, 220, 0.38);
 }
@@ -859,7 +897,8 @@ body.light-mode .customer-badge.followup {
 }
 
 .lead-info,
-.customer-info {
+.customer-info,
+.cash-entry-info {
   display: grid;
   gap: 8px;
   font-size: 13px;
@@ -868,7 +907,8 @@ body.light-mode .customer-badge.followup {
 }
 
 .lead-info i,
-.customer-info i {
+.customer-info i,
+.cash-entry-info i {
   color: var(--accent);
   margin-right: 6px;
 }
@@ -876,7 +916,8 @@ body.light-mode .customer-badge.followup {
 .lead-note,
 .customer-stock,
 .customer-price-grid,
-.customer-mini-alert {
+.customer-mini-alert,
+.cash-entry-note {
   font-size: 13.5px;
   line-height: 1.45;
   color: var(--text-main);
@@ -890,7 +931,8 @@ body.light-mode .customer-badge.followup {
 body.light-mode .lead-note,
 body.light-mode .customer-stock,
 body.light-mode .customer-price-grid,
-body.light-mode .customer-mini-alert {
+body.light-mode .customer-mini-alert,
+body.light-mode .cash-entry-note {
   background: rgba(255, 255, 255, 0.24);
 }
 
@@ -953,7 +995,8 @@ body.light-mode .customer-mini-alert {
 
 .lead-actions,
 .customer-actions,
-.reminder-actions {
+.reminder-actions,
+.cash-entry-actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 9px;
@@ -968,7 +1011,9 @@ body.light-mode .customer-mini-alert {
 .customer-actions a,
 .customer-actions button,
 .reminder-actions a,
-.reminder-actions button {
+.reminder-actions button,
+.cash-entry-actions a,
+.cash-entry-actions button {
   border: 1px solid var(--panel-border);
   background: var(--icon-bg);
   color: var(--text-main);
@@ -981,7 +1026,8 @@ body.light-mode .customer-mini-alert {
 
 .lead-actions i,
 .customer-actions i,
-.reminder-actions i {
+.reminder-actions i,
+.cash-entry-actions i {
   color: var(--accent);
   margin-right: 4px;
 }
@@ -1001,10 +1047,44 @@ body.light-mode .remind-button {
   color: var(--text-sub);
 }
 
+/* CASH BALANCE */
+
+.cash-turnover-card {
+  margin-bottom: 14px;
+}
+
+.cash-entry-amount {
+  font-size: 19px;
+  font-weight: 850;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.cash-entry-amount.out {
+  color: #ff9a9a;
+}
+
+.cash-entry-amount.in {
+  color: #9df5cc;
+}
+
+.cash-method-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--panel-border);
+  background: var(--icon-bg);
+  border-radius: 999px;
+  padding: 6px 9px;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
 /* OVERLAYS */
 
 .lead-overlay,
-.customer-overlay {
+.customer-overlay,
+.cash-overlay {
   position: fixed;
   inset: 0;
   z-index: 120;
@@ -1017,12 +1097,14 @@ body.light-mode .remind-button {
 }
 
 .lead-overlay.hidden,
-.customer-overlay.hidden {
+.customer-overlay.hidden,
+.cash-overlay.hidden {
   display: none;
 }
 
 .lead-panel,
-.customer-panel {
+.customer-panel,
+.cash-panel {
   width: 100%;
   max-width: 430px;
   max-height: 82vh;
@@ -1039,13 +1121,15 @@ body.light-mode .remind-button {
 }
 
 .lead-panel > *,
-.customer-panel > * {
+.customer-panel > *,
+.cash-panel > * {
   position: relative;
   z-index: 1;
 }
 
 .lead-panel-head,
-.customer-panel-head {
+.customer-panel-head,
+.cash-panel-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1054,14 +1138,16 @@ body.light-mode .remind-button {
 }
 
 .lead-panel-title,
-.customer-panel-title {
+.customer-panel-title,
+.cash-panel-title {
   font-size: 22px;
   font-weight: 800;
   color: var(--text-main);
 }
 
 .lead-panel-sub,
-.customer-panel-sub {
+.customer-panel-sub,
+.cash-panel-sub {
   margin-top: 4px;
   font-size: 13px;
   color: var(--text-sub);
@@ -1141,13 +1227,15 @@ body.light-mode .panel-save-btn {
 /* DETAILS */
 
 .lead-detail-grid,
-.customer-detail-grid {
+.customer-detail-grid,
+.cash-detail-grid {
   display: grid;
   gap: 10px;
 }
 
 .lead-detail-row,
-.customer-detail-row {
+.customer-detail-row,
+.cash-detail-row {
   border: 1px solid var(--panel-border);
   background: rgba(255, 255, 255, 0.055);
   border-radius: 18px;
@@ -1155,13 +1243,15 @@ body.light-mode .panel-save-btn {
 }
 
 .lead-detail-row > *,
-.customer-detail-row > * {
+.customer-detail-row > *,
+.cash-detail-row > * {
   position: relative;
   z-index: 1;
 }
 
 body.light-mode .lead-detail-row,
-body.light-mode .customer-detail-row {
+body.light-mode .customer-detail-row,
+body.light-mode .cash-detail-row {
   background: rgba(255, 255, 255, 0.26);
 }
 
@@ -1185,13 +1275,15 @@ body.light-mode .customer-detail-row {
 /* FORMS */
 
 .lead-edit-form,
-.customer-edit-form {
+.customer-edit-form,
+.cash-edit-form {
   display: grid;
   gap: 12px;
 }
 
 .lead-edit-form label,
-.customer-edit-form label {
+.customer-edit-form label,
+.cash-edit-form label {
   display: grid;
   gap: 6px;
   font-size: 12px;
@@ -1203,7 +1295,10 @@ body.light-mode .customer-detail-row {
 .lead-edit-form textarea,
 .customer-edit-form input,
 .customer-edit-form select,
-.customer-edit-form textarea {
+.customer-edit-form textarea,
+.cash-edit-form input,
+.cash-edit-form select,
+.cash-edit-form textarea {
   width: 100%;
   border: 1px solid var(--panel-border);
   border-radius: 16px;
@@ -1219,12 +1314,16 @@ body.light-mode .lead-edit-form select,
 body.light-mode .lead-edit-form textarea,
 body.light-mode .customer-edit-form input,
 body.light-mode .customer-edit-form select,
-body.light-mode .customer-edit-form textarea {
+body.light-mode .customer-edit-form textarea,
+body.light-mode .cash-edit-form input,
+body.light-mode .cash-edit-form select,
+body.light-mode .cash-edit-form textarea {
   background: rgba(255, 255, 255, 0.34);
 }
 
 .lead-edit-form textarea,
-.customer-edit-form textarea {
+.customer-edit-form textarea,
+.cash-edit-form textarea {
   min-height: 86px;
   resize: vertical;
 }
@@ -1427,7 +1526,8 @@ body.light-mode .nav-item.active {
   .lead-actions,
   .customer-actions,
   .reminder-actions,
-  .reminder-actions.two-actions {
+  .reminder-actions.two-actions,
+  .cash-entry-actions {
     grid-template-columns: 1fr;
   }
 
