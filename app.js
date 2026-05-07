@@ -15,11 +15,18 @@ const customerSearchInput = document.getElementById("customerSearchInput");
 const customerListHead = document.getElementById("customerListHead");
 const customerListCount = document.getElementById("customerListCount");
 
+const cashEntryList = document.getElementById("cashEntryList");
+const cashSearchInput = document.getElementById("cashSearchInput");
+const cashListHead = document.getElementById("cashListHead");
+const cashFilterRow = document.getElementById("cashFilterRow");
+const cashListCount = document.getElementById("cashListCount");
+
 const savedTheme = localStorage.getItem("pureTheme") || "dark";
 const savedTab = localStorage.getItem("pureActiveTab") || "dashboard";
 
 let activeLeadStatusFilter = "All";
 let activeCustomerFilter = "all";
+let activeCashTypeFilter = "All";
 
 const defaultLeads = [
   {
@@ -158,8 +165,48 @@ const defaultCustomers = [
   }
 ];
 
+const defaultCashEntries = [
+  {
+    id: "CASH-001",
+    type: "Advance",
+    customer: "Cafe Aroma",
+    amount: "15000",
+    date: "20 April 2026",
+    method: "Bank",
+    note: "Advance payment received for label printing."
+  },
+  {
+    id: "CASH-002",
+    type: "Collection",
+    customer: "Cafe Aroma",
+    amount: "12500",
+    date: "12 April 2026",
+    method: "Cash",
+    note: "Partial payment collected from 500ml order."
+  },
+  {
+    id: "CASH-003",
+    type: "Expense",
+    customer: "Artline Printing",
+    amount: "8500",
+    date: "11 April 2026",
+    method: "Cash",
+    note: "Label printing payment."
+  },
+  {
+    id: "CASH-004",
+    type: "Credit",
+    customer: "Cafe Aroma",
+    amount: "3000",
+    date: "12 April 2026",
+    method: "Credit",
+    note: "Credit balance allowed for customer."
+  }
+];
+
 let leads = JSON.parse(localStorage.getItem("pureLeads")) || defaultLeads;
 let customers = JSON.parse(localStorage.getItem("pureCustomers")) || defaultCustomers;
+let cashEntries = JSON.parse(localStorage.getItem("pureCashEntries")) || defaultCashEntries;
 
 leads = leads.map((lead) => ({
   whatsapp: lead.whatsapp || toWhatsAppNumber(lead.phone || ""),
@@ -210,6 +257,19 @@ function isThisMonth(dateText) {
   return parsed.getFullYear() === now.getFullYear() && parsed.getMonth() === now.getMonth();
 }
 
+function isToday(dateText) {
+  if (!dateText) return false;
+
+  const now = new Date();
+  const parsed = new Date(dateText);
+
+  if (Number.isNaN(parsed.getTime())) return false;
+
+  return parsed.getFullYear() === now.getFullYear() &&
+    parsed.getMonth() === now.getMonth() &&
+    parsed.getDate() === now.getDate();
+}
+
 function needsFollowUp(customer) {
   return !isThisMonth(customer.lastOrderDate);
 }
@@ -240,12 +300,36 @@ function statusClass(status) {
   return "new";
 }
 
+function cashTypeClass(type) {
+  const value = String(type || "").toLowerCase();
+
+  if (value === "income") return "income";
+  if (value === "expense") return "expense";
+  if (value === "advance") return "advance";
+  if (value === "collection") return "collection";
+  if (value === "credit") return "credit";
+
+  return "income";
+}
+
+function isCashIn(type) {
+  return ["Income", "Advance", "Collection"].includes(type);
+}
+
+function isCashOut(type) {
+  return ["Expense", "Credit"].includes(type);
+}
+
 function saveLeads() {
   localStorage.setItem("pureLeads", JSON.stringify(leads));
 }
 
 function saveCustomers() {
   localStorage.setItem("pureCustomers", JSON.stringify(customers));
+}
+
+function saveCashEntries() {
+  localStorage.setItem("pureCashEntries", JSON.stringify(cashEntries));
 }
 
 function applyTheme(theme) {
@@ -275,7 +359,7 @@ function setHeader(tab) {
 
   if (tab === "cash") {
     pageHeading.textContent = "Cash Balance";
-    pageSubtitle.textContent = "Track available cash & collections";
+    pageSubtitle.textContent = "Track cash movements & collections";
     return;
   }
 
@@ -1412,6 +1496,352 @@ function renderCustomerEdit(customerId, returnFilter = "all") {
   });
 }
 
+/* CASH BALANCE */
+
+function getFilteredCashEntries() {
+  const query = cashSearchInput ? cashSearchInput.value.trim().toLowerCase() : "";
+  let result = [...cashEntries];
+
+  if (query) {
+    result = result.filter((entry) => {
+      const text = [
+        entry.type,
+        entry.customer,
+        entry.amount,
+        entry.date,
+        entry.method,
+        entry.note
+      ].join(" ").toLowerCase();
+
+      return text.includes(query);
+    });
+
+    if (cashListHead) cashListHead.classList.add("hidden");
+    if (cashFilterRow) cashFilterRow.classList.add("hidden");
+  } else {
+    if (cashListHead) cashListHead.classList.remove("hidden");
+    if (cashFilterRow) cashFilterRow.classList.remove("hidden");
+
+    if (activeCashTypeFilter !== "All") {
+      result = result.filter((entry) => entry.type === activeCashTypeFilter);
+    }
+  }
+
+  return result;
+}
+
+function updateCashSummary() {
+  const availableCashValue = document.getElementById("availableCashValue");
+  const todayCollectedValue = document.getElementById("todayCollectedValue");
+  const pendingCollectionValue = document.getElementById("pendingCollectionValue");
+  const creditGivenValue = document.getElementById("creditGivenValue");
+
+  const monthlyIncomeValue = document.getElementById("monthlyIncomeValue");
+  const monthlyExpenseValue = document.getElementById("monthlyExpenseValue");
+  const netCashValue = document.getElementById("netCashValue");
+
+  const cashIn = cashEntries
+    .filter((entry) => isCashIn(entry.type))
+    .reduce((sum, entry) => sum + moneyNumber(entry.amount), 0);
+
+  const cashOut = cashEntries
+    .filter((entry) => isCashOut(entry.type))
+    .reduce((sum, entry) => sum + moneyNumber(entry.amount), 0);
+
+  const todayCollected = cashEntries
+    .filter((entry) => isToday(entry.date) && isCashIn(entry.type))
+    .reduce((sum, entry) => sum + moneyNumber(entry.amount), 0);
+
+  const pendingCollections = customers.reduce((sum, customer) => sum + moneyNumber(customer.pendingBalance), 0);
+  const creditGiven = customers.reduce((sum, customer) => sum + moneyNumber(customer.creditBalance), 0);
+
+  const monthIncome = cashEntries
+    .filter((entry) => isThisMonth(entry.date) && isCashIn(entry.type))
+    .reduce((sum, entry) => sum + moneyNumber(entry.amount), 0);
+
+  const monthExpenses = cashEntries
+    .filter((entry) => isThisMonth(entry.date) && isCashOut(entry.type))
+    .reduce((sum, entry) => sum + moneyNumber(entry.amount), 0);
+
+  if (availableCashValue) availableCashValue.textContent = formatCurrency(cashIn - cashOut);
+  if (todayCollectedValue) todayCollectedValue.textContent = formatCurrency(todayCollected);
+  if (pendingCollectionValue) pendingCollectionValue.textContent = formatCurrency(pendingCollections);
+  if (creditGivenValue) creditGivenValue.textContent = formatCurrency(creditGiven);
+
+  if (monthlyIncomeValue) monthlyIncomeValue.textContent = formatCurrency(monthIncome);
+  if (monthlyExpenseValue) monthlyExpenseValue.textContent = formatCurrency(monthExpenses);
+  if (netCashValue) netCashValue.textContent = formatCurrency(monthIncome - monthExpenses);
+}
+
+function renderCashEntries() {
+  if (!cashEntryList) return;
+
+  const filteredEntries = getFilteredCashEntries();
+  const query = cashSearchInput ? cashSearchInput.value.trim() : "";
+
+  if (cashListCount && !query) {
+    cashListCount.textContent = activeCashTypeFilter === "All"
+      ? `${filteredEntries.length} entries`
+      : `${filteredEntries.length} ${activeCashTypeFilter}`;
+  }
+
+  if (filteredEntries.length === 0) {
+    cashEntryList.innerHTML = `
+      <div class="section-card glass round-lg empty-state">
+        No cash entries found.
+      </div>
+    `;
+    return;
+  }
+
+  cashEntryList.innerHTML = filteredEntries.map((entry) => `
+    <div class="cash-entry-card glass round-lg">
+      <div class="cash-entry-top">
+        <div>
+          <div class="cash-entry-title">${entry.customer || "General"}</div>
+          <div class="cash-entry-sub">${entry.date} • ${entry.method}</div>
+        </div>
+        <span class="cash-badge ${cashTypeClass(entry.type)}">${entry.type}</span>
+      </div>
+
+      <div class="cash-entry-info">
+        <div><i class="bi bi-cash"></i> Amount: <strong class="cash-entry-amount ${isCashIn(entry.type) ? "in" : "out"}">${formatCurrency(entry.amount)}</strong></div>
+        <div><i class="bi bi-credit-card"></i> Method: <span class="cash-method-pill">${entry.method}</span></div>
+      </div>
+
+      <div class="cash-entry-note">${entry.note || "No note."}</div>
+
+      <div class="cash-entry-actions">
+        <button data-edit-cash="${entry.id}">
+          <i class="bi bi-pencil-square"></i> Edit
+        </button>
+        <button data-delete-cash="${entry.id}">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+        <button data-view-cash="${entry.id}">
+          <i class="bi bi-eye"></i> View
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  document.querySelectorAll("[data-edit-cash]").forEach((button) => {
+    button.addEventListener("click", () => renderCashEntryForm(button.getAttribute("data-edit-cash")));
+  });
+
+  document.querySelectorAll("[data-delete-cash]").forEach((button) => {
+    button.addEventListener("click", () => deleteCashEntry(button.getAttribute("data-delete-cash")));
+  });
+
+  document.querySelectorAll("[data-view-cash]").forEach((button) => {
+    button.addEventListener("click", () => renderCashDetail(button.getAttribute("data-view-cash")));
+  });
+}
+
+function createCashOverlay() {
+  if (document.getElementById("cashOverlay")) return;
+
+  const overlay = document.createElement("div");
+  overlay.id = "cashOverlay";
+  overlay.className = "cash-overlay hidden";
+  overlay.innerHTML = `
+    <div class="cash-panel glass">
+      <div id="cashPanelContent"></div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function openCashOverlay() {
+  createCashOverlay();
+  document.getElementById("cashOverlay").classList.remove("hidden");
+}
+
+function closeCashOverlay() {
+  const overlay = document.getElementById("cashOverlay");
+  if (overlay) overlay.classList.add("hidden");
+}
+
+function renderCashEntryForm(entryId = null) {
+  openCashOverlay();
+
+  const isNewEntry = !entryId;
+  const entry = cashEntries.find((item) => item.id === entryId) || {
+    id: `CASH-${String(Date.now()).slice(-5)}`,
+    type: "Income",
+    customer: "",
+    amount: "",
+    date: new Date().toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    }),
+    method: "Cash",
+    note: ""
+  };
+
+  const content = document.getElementById("cashPanelContent");
+
+  content.innerHTML = `
+    <div class="cash-panel-head">
+      <div>
+        <div class="cash-panel-title">${isNewEntry ? "Add Cash Entry" : "Edit Cash Entry"}</div>
+        <div class="cash-panel-sub">Record income, expense, advance, collection or credit</div>
+      </div>
+      <button class="panel-close-btn" id="closeCashPanel">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form class="cash-edit-form" id="cashEntryForm">
+      <label>
+        Type
+        <select name="type">
+          ${["Income", "Expense", "Advance", "Collection", "Credit"].map((type) => `
+            <option value="${type}" ${entry.type === type ? "selected" : ""}>${type}</option>
+          `).join("")}
+        </select>
+      </label>
+
+      <label>
+        Customer / Source
+        <input name="customer" value="${entry.customer}" placeholder="Cafe Aroma / Artline Printing" />
+      </label>
+
+      <div class="form-grid-2">
+        <label>
+          Amount
+          <input name="amount" type="number" value="${entry.amount}" required />
+        </label>
+
+        <label>
+          Date
+          <input name="date" value="${entry.date}" required />
+        </label>
+      </div>
+
+      <label>
+        Payment Method
+        <select name="method">
+          ${["Cash", "Bank", "Online", "Credit"].map((method) => `
+            <option value="${method}" ${entry.method === method ? "selected" : ""}>${method}</option>
+          `).join("")}
+        </select>
+      </label>
+
+      <label>
+        Note
+        <textarea name="note">${entry.note}</textarea>
+      </label>
+
+      <button class="panel-save-btn" type="submit">
+        <i class="bi bi-check2-circle"></i> Save Cash Entry
+      </button>
+    </form>
+  `;
+
+  document.getElementById("closeCashPanel").addEventListener("click", closeCashOverlay);
+
+  document.getElementById("cashEntryForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const form = new FormData(event.target);
+
+    const updatedEntry = {
+      id: entry.id,
+      type: form.get("type"),
+      customer: form.get("customer"),
+      amount: form.get("amount"),
+      date: form.get("date"),
+      method: form.get("method"),
+      note: form.get("note")
+    };
+
+    if (isNewEntry) {
+      cashEntries.unshift(updatedEntry);
+    } else {
+      cashEntries = cashEntries.map((item) => item.id === entry.id ? updatedEntry : item);
+    }
+
+    saveCashEntries();
+    updateCashSummary();
+    renderCashEntries();
+    renderCashDetail(updatedEntry.id);
+  });
+}
+
+function renderCashDetail(entryId) {
+  openCashOverlay();
+
+  const entry = cashEntries.find((item) => item.id === entryId);
+  if (!entry) return;
+
+  const content = document.getElementById("cashPanelContent");
+
+  content.innerHTML = `
+    <div class="cash-panel-head">
+      <div>
+        <div class="cash-panel-title">${entry.type}</div>
+        <div class="cash-panel-sub">${entry.date} • ${entry.method}</div>
+      </div>
+      <button class="panel-close-btn" id="closeCashPanel">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="cash-panel-head">
+      <button class="panel-back-btn" id="editCashEntryBtn">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="panel-edit-btn" id="closeCashPanelAlt">
+        <i class="bi bi-check2"></i> Done
+      </button>
+    </div>
+
+    <div class="cash-detail-grid">
+      <div class="cash-detail-row">
+        <div class="detail-label">Customer / Source</div>
+        <div class="detail-value">${entry.customer || "General"}</div>
+      </div>
+
+      <div class="cash-detail-row">
+        <div class="detail-label">Amount</div>
+        <div class="detail-value">${formatCurrency(entry.amount)}</div>
+      </div>
+
+      <div class="cash-detail-row">
+        <div class="detail-label">Type</div>
+        <div class="detail-value">${entry.type}</div>
+      </div>
+
+      <div class="cash-detail-row">
+        <div class="detail-label">Payment Method</div>
+        <div class="detail-value">${entry.method}</div>
+      </div>
+
+      <div class="cash-detail-row">
+        <div class="detail-label">Note</div>
+        <div class="detail-value">${entry.note || "No note."}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("closeCashPanel").addEventListener("click", closeCashOverlay);
+  document.getElementById("closeCashPanelAlt").addEventListener("click", closeCashOverlay);
+  document.getElementById("editCashEntryBtn").addEventListener("click", () => renderCashEntryForm(entryId));
+}
+
+function deleteCashEntry(entryId) {
+  const confirmed = window.confirm("Delete this cash entry?");
+  if (!confirmed) return;
+
+  cashEntries = cashEntries.filter((entry) => entry.id !== entryId);
+  saveCashEntries();
+  updateCashSummary();
+  renderCashEntries();
+}
+
 /* INIT */
 
 if (lightBtn && darkBtn) {
@@ -1474,6 +1904,41 @@ if (addCustomerBtn) {
   addCustomerBtn.addEventListener("click", renderClosedLeadSelector);
 }
 
+document.querySelectorAll(".cash-filter-chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".cash-filter-chip").forEach((item) => item.classList.remove("active"));
+    chip.classList.add("active");
+    activeCashTypeFilter = chip.getAttribute("data-cash-type");
+    renderCashEntries();
+  });
+});
+
+document.querySelectorAll(".cash-summary-card").forEach((card) => {
+  card.addEventListener("click", () => {
+    const filter = card.getAttribute("data-cash-filter");
+
+    if (filter === "all") activeCashTypeFilter = "All";
+    if (filter === "today") activeCashTypeFilter = "Collection";
+    if (filter === "pending") activeCashTypeFilter = "All";
+    if (filter === "credit") activeCashTypeFilter = "Credit";
+
+    document.querySelectorAll(".cash-filter-chip").forEach((item) => {
+      item.classList.toggle("active", item.getAttribute("data-cash-type") === activeCashTypeFilter);
+    });
+
+    renderCashEntries();
+  });
+});
+
+if (cashSearchInput) {
+  cashSearchInput.addEventListener("input", renderCashEntries);
+}
+
+const addCashEntryBtn = document.getElementById("addCashEntryBtn");
+if (addCashEntryBtn) {
+  addCashEntryBtn.addEventListener("click", () => renderCashEntryForm(null));
+}
+
 applyTheme(savedTheme);
 switchTab(savedTab);
 
@@ -1482,3 +1947,6 @@ renderLeadPipeline();
 
 updateCustomerSummary();
 renderCustomerList();
+
+updateCashSummary();
+renderCashEntries();
