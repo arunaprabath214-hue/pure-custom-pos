@@ -117,11 +117,11 @@
           <p>Add<br />Customer</p>
         </button>
 
-        <button class="action-card glass round-lg">
+        <button class="action-card glass round-lg" data-open-tab="cash">
           <div class="icon-wrap">
             <i class="bi bi-receipt"></i>
           </div>
-          <p>New Bill</p>
+          <p>New Cash<br />Entry</p>
         </button>
       </div>
 
@@ -348,6 +348,114 @@
       </div>
 
       <div class="customer-list" id="customerList"></div>
+    </section>
+
+    <!-- CASH BALANCE TAB -->
+    <section class="tab-screen" id="cashScreen">
+      <button class="top-add-lead glass" id="addCashEntryBtn">
+        <i class="bi bi-plus-lg"></i>
+        Add Cash Entry
+      </button>
+
+      <div class="lead-summary-grid">
+        <button class="mini-card glass round-lg cash-summary-card" data-cash-filter="all">
+          <div class="mini-icon">
+            <i class="bi bi-wallet2"></i>
+          </div>
+          <div>
+            <div class="mini-value pending-value" id="availableCashValue">Rs. 0</div>
+            <div class="mini-label">Available Cash</div>
+          </div>
+        </button>
+
+        <button class="mini-card glass round-lg cash-summary-card" data-cash-filter="today">
+          <div class="mini-icon">
+            <i class="bi bi-cash-coin"></i>
+          </div>
+          <div>
+            <div class="mini-value pending-value" id="todayCollectedValue">Rs. 0</div>
+            <div class="mini-label">Today Collected</div>
+          </div>
+        </button>
+
+        <button class="mini-card glass round-lg cash-summary-card" data-cash-filter="pending">
+          <div class="mini-icon">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <div>
+            <div class="mini-value pending-value" id="pendingCollectionValue">Rs. 0</div>
+            <div class="mini-label">Pending Collections</div>
+          </div>
+        </button>
+
+        <button class="mini-card glass round-lg cash-summary-card" data-cash-filter="credit">
+          <div class="mini-icon">
+            <i class="bi bi-arrow-left-right"></i>
+          </div>
+          <div>
+            <div class="mini-value pending-value" id="creditGivenValue">Rs. 0</div>
+            <div class="mini-label">Credit Given</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="search-card glass round-lg">
+        <i class="bi bi-search"></i>
+        <input
+          id="cashSearchInput"
+          type="text"
+          placeholder="Search cash entries, customer, note..."
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="section-head" id="cashListHead">
+        <h3>Cash Entries</h3>
+        <span id="cashListCount">All entries</span>
+      </div>
+
+      <div class="filter-row" id="cashFilterRow">
+        <button class="cash-filter-chip active" data-cash-type="All">All</button>
+        <button class="cash-filter-chip" data-cash-type="Income">Income</button>
+        <button class="cash-filter-chip" data-cash-type="Expense">Expense</button>
+        <button class="cash-filter-chip" data-cash-type="Advance">Advance</button>
+        <button class="cash-filter-chip" data-cash-type="Collection">Collection</button>
+        <button class="cash-filter-chip" data-cash-type="Credit">Credit</button>
+      </div>
+
+      <div class="section-card glass round-lg cash-turnover-card">
+        <div class="insight-row">
+          <div class="insight-left">
+            <div class="list-icon">
+              <i class="bi bi-arrow-down-circle"></i>
+            </div>
+            <div class="insight-name">Monthly Income</div>
+          </div>
+          <div class="insight-value" id="monthlyIncomeValue">Rs. 0</div>
+        </div>
+
+        <div class="insight-row">
+          <div class="insight-left">
+            <div class="list-icon">
+              <i class="bi bi-arrow-up-circle"></i>
+            </div>
+            <div class="insight-name">Monthly Expenses</div>
+          </div>
+          <div class="insight-value" id="monthlyExpenseValue">Rs. 0</div>
+        </div>
+
+        <div class="insight-row">
+          <div class="insight-left">
+            <div class="list-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="insight-name">Net Cash</div>
+          </div>
+          <div class="insight-value" id="netCashValue">Rs. 0</div>
+        </div>
+      </div>
+
+      <div class="cash-list" id="cashEntryList"></div>
     </section>
   </div>
 
