@@ -406,7 +406,48 @@ function switchTab(tab) {
 
   setHeader(tab);
   localStorage.setItem("pureActiveTab", tab);
+  updateDashboardSummary();
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateDashboardSummary() {
+  const dashboardTodayRevenue = document.getElementById("dashboardTodayRevenue");
+  const dashboardTodayRevenueMeta = document.getElementById("dashboardTodayRevenueMeta");
+  const dashboardPendingPayments = document.getElementById("dashboardPendingPayments");
+  const dashboardPendingPaymentsMeta = document.getElementById("dashboardPendingPaymentsMeta");
+  const dashboardActiveOrders = document.getElementById("dashboardActiveOrders");
+  const dashboardActiveOrdersMeta = document.getElementById("dashboardActiveOrdersMeta");
+  const dashboardLowStockAlerts = document.getElementById("dashboardLowStockAlerts");
+  const dashboardLowStockAlertsMeta = document.getElementById("dashboardLowStockAlertsMeta");
+  const dashboardCashBalance = document.getElementById("dashboardCashBalance");
+  const dashboardCashBalanceMeta = document.getElementById("dashboardCashBalanceMeta");
+
+  const todayRevenue = cashEntries
+    .filter((entry) => isToday(entry.date) && isCashIn(entry.type))
+    .reduce((sum, entry) => sum + moneyNumber(entry.amount), 0);
+
+  const pendingPayments = customers.reduce((sum, customer) => sum + moneyNumber(customer.pendingBalance), 0);
+  const followUpCustomers = customers.filter(needsFollowUp).length;
+  const activeLeads = leads.filter((lead) => !["Closed", "Lost"].includes(lead.status)).length;
+  const lowStockAlerts = customers.filter((customer) => totalLabelStock(customer) < 500).length;
+
+  const cashIn = cashEntries
+    .filter((entry) => isCashIn(entry.type))
+    .reduce((sum, entry) => sum + moneyNumber(entry.amount), 0);
+  const cashOut = cashEntries
+    .filter((entry) => isCashOut(entry.type))
+    .reduce((sum, entry) => sum + moneyNumber(entry.amount), 0);
+
+  if (dashboardTodayRevenue) dashboardTodayRevenue.textContent = formatCurrency(todayRevenue);
+  if (dashboardTodayRevenueMeta) dashboardTodayRevenueMeta.textContent = "From today's cash-in entries";
+  if (dashboardPendingPayments) dashboardPendingPayments.textContent = formatCurrency(pendingPayments);
+  if (dashboardPendingPaymentsMeta) dashboardPendingPaymentsMeta.textContent = `${customers.length} customer accounts`;
+  if (dashboardActiveOrders) dashboardActiveOrders.textContent = String(activeLeads + followUpCustomers);
+  if (dashboardActiveOrdersMeta) dashboardActiveOrdersMeta.textContent = `${activeLeads} active leads • ${followUpCustomers} customers need follow-up`;
+  if (dashboardLowStockAlerts) dashboardLowStockAlerts.textContent = String(lowStockAlerts);
+  if (dashboardLowStockAlertsMeta) dashboardLowStockAlertsMeta.textContent = "Customers below 500 labels";
+  if (dashboardCashBalance) dashboardCashBalance.textContent = formatCurrency(cashIn - cashOut);
+  if (dashboardCashBalanceMeta) dashboardCashBalanceMeta.textContent = "Cash-in minus expenses/credit";
 }
 
 /* LEADS */
@@ -1849,6 +1890,13 @@ if (lightBtn && darkBtn) {
   darkBtn.addEventListener("click", () => applyTheme("dark"));
 }
 
+const quotationComingSoonBtn = document.getElementById("quotationComingSoonBtn");
+if (quotationComingSoonBtn) {
+  quotationComingSoonBtn.addEventListener("click", () => {
+    window.alert("Quotation tools are coming soon. No quotation was created.");
+  });
+}
+
 document.querySelectorAll(".nav-item").forEach((item) => {
   item.addEventListener("click", () => {
     const tab = item.getAttribute("data-tab");
@@ -1950,3 +1998,4 @@ renderCustomerList();
 
 updateCashSummary();
 renderCashEntries();
+updateDashboardSummary();
