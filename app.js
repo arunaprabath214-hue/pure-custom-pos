@@ -233,6 +233,16 @@ function cleanPhone(phone) {
   return String(phone || "").replace(/\s/g, "");
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
 function moneyNumber(value) {
   return Number(value || 0);
 }
@@ -511,22 +521,22 @@ function renderLeadPipeline() {
     <div class="lead-card glass round-lg">
       <div class="lead-top">
         <div>
-          <div class="lead-name">${lead.businessName}</div>
-          <div class="lead-person">${lead.contactPerson} • ${lead.address}</div>
+          <div class="lead-name">${escapeHtml(lead.businessName)}</div>
+          <div class="lead-person">${escapeHtml(lead.contactPerson)} • ${escapeHtml(lead.address)}</div>
         </div>
-        <span class="status-badge ${statusClass(lead.status)}">${lead.status}</span>
+        <span class="status-badge ${statusClass(lead.status)}">${escapeHtml(lead.status)}</span>
       </div>
 
       <div class="lead-info">
-        <div><i class="bi bi-telephone"></i> ${lead.phone}</div>
-        <div><i class="bi bi-shop"></i> ${lead.businessType}</div>
-        <div><i class="bi bi-calendar-event"></i> Follow-up: ${lead.followUp}</div>
+        <div><i class="bi bi-telephone"></i> ${escapeHtml(lead.phone)}</div>
+        <div><i class="bi bi-shop"></i> ${escapeHtml(lead.businessType)}</div>
+        <div><i class="bi bi-calendar-event"></i> Follow-up: ${escapeHtml(lead.followUp)}</div>
       </div>
 
-      <div class="lead-note">${lead.notes}</div>
+      <div class="lead-note">${escapeHtml(lead.notes)}</div>
 
       <div class="lead-actions">
-        <a href="tel:${cleanPhone(lead.phone)}">
+        <a href="tel:${escapeHtml(cleanPhone(lead.phone))}">
           <i class="bi bi-telephone-fill"></i> Call
         </a>
         <a href="https://wa.me/${toWhatsAppNumber(lead.whatsapp || lead.phone)}" target="_blank">
@@ -626,8 +636,8 @@ function renderLeadList(filter = "all") {
           ? selectedLeads.map((lead) => `
               <button class="compact-lead-item" data-lead-id="${lead.id}">
                 <div>
-                  <div class="compact-lead-name">${lead.businessName}</div>
-                  <div class="compact-lead-address">${lead.address}</div>
+                  <div class="compact-lead-name">${escapeHtml(lead.businessName)}</div>
+                  <div class="compact-lead-address">${escapeHtml(lead.address)}</div>
                 </div>
                 <i class="bi bi-chevron-right"></i>
               </button>
@@ -657,8 +667,8 @@ function renderLeadDetail(leadId, returnFilter = "all") {
   content.innerHTML = `
     <div class="lead-panel-head">
       <div>
-        <div class="lead-panel-title">${lead.businessName}</div>
-        <div class="lead-panel-sub">${lead.address}</div>
+        <div class="lead-panel-title">${escapeHtml(lead.businessName)}</div>
+        <div class="lead-panel-sub">${escapeHtml(lead.address)}</div>
       </div>
       <button class="panel-close-btn" id="closeLeadPanel">
         <i class="bi bi-x-lg"></i>
@@ -677,39 +687,39 @@ function renderLeadDetail(leadId, returnFilter = "all") {
     <div class="lead-detail-grid">
       <div class="lead-detail-row">
         <div class="detail-label">Business Name</div>
-        <div class="detail-value">${lead.businessName}</div>
+        <div class="detail-value">${escapeHtml(lead.businessName)}</div>
       </div>
       <div class="lead-detail-row">
         <div class="detail-label">Contact Person</div>
-        <div class="detail-value">${lead.contactPerson}</div>
+        <div class="detail-value">${escapeHtml(lead.contactPerson)}</div>
       </div>
       <div class="lead-detail-row">
         <div class="detail-label">Phone Number</div>
-        <div class="detail-value">${lead.phone}</div>
+        <div class="detail-value">${escapeHtml(lead.phone)}</div>
       </div>
       <div class="lead-detail-row">
         <div class="detail-label">WhatsApp Number</div>
-        <div class="detail-value">${lead.whatsapp}</div>
+        <div class="detail-value">${escapeHtml(lead.whatsapp)}</div>
       </div>
       <div class="lead-detail-row">
         <div class="detail-label">Address / Location</div>
-        <div class="detail-value">${lead.address}</div>
+        <div class="detail-value">${escapeHtml(lead.address)}</div>
       </div>
       <div class="lead-detail-row">
         <div class="detail-label">Business Type</div>
-        <div class="detail-value">${lead.businessType}</div>
+        <div class="detail-value">${escapeHtml(lead.businessType)}</div>
       </div>
       <div class="lead-detail-row">
         <div class="detail-label">Lead Status</div>
-        <div class="detail-value">${lead.status}</div>
+        <div class="detail-value">${escapeHtml(lead.status)}</div>
       </div>
       <div class="lead-detail-row">
         <div class="detail-label">Follow-up Date</div>
-        <div class="detail-value">${lead.followUp}</div>
+        <div class="detail-value">${escapeHtml(lead.followUp)}</div>
       </div>
       <div class="lead-detail-row">
         <div class="detail-label">Notes</div>
-        <div class="detail-value">${lead.notes}</div>
+        <div class="detail-value">${escapeHtml(lead.notes)}</div>
       </div>
     </div>
   `;
@@ -742,7 +752,7 @@ function renderLeadEdit(leadId, returnFilter = "all") {
     <div class="lead-panel-head">
       <div>
         <div class="lead-panel-title">${isNewLead ? "Add New Lead" : "Edit Lead"}</div>
-        <div class="lead-panel-sub">${isNewLead ? "Create a fresh prospect record" : lead.businessName}</div>
+        <div class="lead-panel-sub">${isNewLead ? "Create a fresh prospect record" : escapeHtml(lead.businessName)}</div>
       </div>
       <button class="panel-close-btn" id="closeLeadPanel">
         <i class="bi bi-x-lg"></i>
@@ -750,11 +760,11 @@ function renderLeadEdit(leadId, returnFilter = "all") {
     </div>
 
     <form class="lead-edit-form" id="leadEditForm">
-      <label>Business Name<input name="businessName" value="${lead.businessName}" required /></label>
-      <label>Contact Person<input name="contactPerson" value="${lead.contactPerson}" /></label>
-      <label>Phone Number<input name="phone" value="${lead.phone}" /></label>
-      <label>WhatsApp Number<input name="whatsapp" value="${lead.whatsapp}" /></label>
-      <label>Address / Location<input name="address" value="${lead.address}" /></label>
+      <label>Business Name<input name="businessName" value="${escapeHtml(lead.businessName)}" required /></label>
+      <label>Contact Person<input name="contactPerson" value="${escapeHtml(lead.contactPerson)}" /></label>
+      <label>Phone Number<input name="phone" value="${escapeHtml(lead.phone)}" /></label>
+      <label>WhatsApp Number<input name="whatsapp" value="${escapeHtml(lead.whatsapp)}" /></label>
+      <label>Address / Location<input name="address" value="${escapeHtml(lead.address)}" /></label>
 
       <label>
         Business Type
@@ -774,8 +784,8 @@ function renderLeadEdit(leadId, returnFilter = "all") {
         </select>
       </label>
 
-      <label>Follow-up Date<input name="followUp" value="${lead.followUp}" /></label>
-      <label>Notes<textarea name="notes">${lead.notes}</textarea></label>
+      <label>Follow-up Date<input name="followUp" value="${escapeHtml(lead.followUp)}" /></label>
+      <label>Notes<textarea name="notes">${escapeHtml(lead.notes)}</textarea></label>
 
       <button class="panel-save-btn" type="submit">
         <i class="bi bi-check2-circle"></i> Save Lead
@@ -908,18 +918,18 @@ function customerCardTemplate(customer) {
   const reminderNeeded = needsReminder(customer);
 
   return `
-    <div class="customer-card glass round-lg" data-view-customer="${customer.id}">
+    <div class="customer-card glass round-lg" data-view-customer="${escapeHtml(customer.id)}">
       <div class="customer-top">
         <div>
-          <div class="customer-name">${customer.brandName || customer.businessName}</div>
-          <div class="customer-person">${customer.contactPerson} • ${customer.address}</div>
+          <div class="customer-name">${escapeHtml(customer.brandName || customer.businessName)}</div>
+          <div class="customer-person">${escapeHtml(customer.contactPerson)} • ${escapeHtml(customer.address)}</div>
         </div>
         <span class="customer-badge ${badge.className}">${badge.label}</span>
       </div>
 
       <div class="customer-info">
-        <div><i class="bi bi-person-badge"></i> ${customer.id}</div>
-        <div><i class="bi bi-calendar-event"></i> Last order: ${customer.lastOrderDate || "No order yet"}</div>
+        <div><i class="bi bi-person-badge"></i> ${escapeHtml(customer.id)}</div>
+        <div><i class="bi bi-calendar-event"></i> Last order: ${escapeHtml(customer.lastOrderDate || "No order yet")}</div>
         <div><i class="bi bi-credit-card"></i> Pending: ${formatCurrency(customer.pendingBalance)}</div>
         <div><i class="bi bi-wallet2"></i> Credit: ${formatCurrency(customer.creditBalance)}</div>
       </div>
@@ -929,15 +939,15 @@ function customerCardTemplate(customer) {
         <div class="stock-grid">
           <div class="stock-pill">
             <div class="stock-size">500ml</div>
-            <div class="stock-count">${customer.stock500 || 0}</div>
+            <div class="stock-count">${escapeHtml(customer.stock500 || 0)}</div>
           </div>
           <div class="stock-pill">
             <div class="stock-size">1000ml</div>
-            <div class="stock-count">${customer.stock1000 || 0}</div>
+            <div class="stock-count">${escapeHtml(customer.stock1000 || 0)}</div>
           </div>
           <div class="stock-pill">
             <div class="stock-size">1500ml</div>
-            <div class="stock-count">${customer.stock1500 || 0}</div>
+            <div class="stock-count">${escapeHtml(customer.stock1500 || 0)}</div>
           </div>
         </div>
       </div>
@@ -980,7 +990,7 @@ function customerCardTemplate(customer) {
       }
 
       <div class="customer-actions">
-        <a href="tel:${cleanPhone(customer.phone)}" onclick="event.stopPropagation()">
+        <a href="tel:${escapeHtml(cleanPhone(customer.phone))}" onclick="event.stopPropagation()">
           <i class="bi bi-telephone-fill"></i> Call
         </a>
         <a href="https://wa.me/${toWhatsAppNumber(customer.whatsapp || customer.phone)}" target="_blank" onclick="event.stopPropagation()">
@@ -989,12 +999,12 @@ function customerCardTemplate(customer) {
         ${
           reminderNeeded
             ? `
-              <a class="remind-button" href="${whatsappReminderLink(customer)}" target="_blank" onclick="event.stopPropagation()">
+              <a class="remind-button" href="${escapeHtml(whatsappReminderLink(customer))}" target="_blank" onclick="event.stopPropagation()">
                 <i class="bi bi-bell-fill"></i> Remind
               </a>
             `
             : `
-              <button data-edit-customer="${customer.id}">
+              <button data-edit-customer="${escapeHtml(customer.id)}">
                 <i class="bi bi-pencil-square"></i> Edit
               </button>
             `
@@ -1148,8 +1158,8 @@ function renderClosedLeadSelector() {
           ? closedLeads.map((lead) => `
             <button class="closed-lead-item" data-closed-lead="${lead.id}">
               <div>
-                <div class="closed-lead-name">${lead.businessName}</div>
-                <div class="closed-lead-address">${lead.contactPerson} • ${lead.address}</div>
+                <div class="closed-lead-name">${escapeHtml(lead.businessName)}</div>
+                <div class="closed-lead-address">${escapeHtml(lead.contactPerson)} • ${escapeHtml(lead.address)}</div>
               </div>
               <i class="bi bi-chevron-right"></i>
             </button>
@@ -1180,7 +1190,7 @@ function renderCustomerCreateFromLead(leadId) {
     <div class="customer-panel-head">
       <div>
         <div class="customer-panel-title">Create Customer</div>
-        <div class="customer-panel-sub">${lead.businessName} • ${lead.address}</div>
+        <div class="customer-panel-sub">${escapeHtml(lead.businessName)} • ${escapeHtml(lead.address)}</div>
       </div>
       <button class="panel-close-btn" id="closeCustomerPanel">
         <i class="bi bi-x-lg"></i>
@@ -1189,12 +1199,12 @@ function renderCustomerCreateFromLead(leadId) {
 
     <form class="customer-edit-form" id="customerCreateForm">
       <label>Customer ID<input name="id" value="CUS-${String(Date.now()).slice(-4)}" required /></label>
-      <label>Business Name<input name="businessName" value="${lead.businessName}" required /></label>
-      <label>Brand Name<input name="brandName" value="${lead.businessName}" required /></label>
-      <label>Contact Person<input name="contactPerson" value="${lead.contactPerson}" /></label>
-      <label>Phone Number<input name="phone" value="${lead.phone}" /></label>
-      <label>WhatsApp Number<input name="whatsapp" value="${lead.whatsapp}" /></label>
-      <label>Address / Location<input name="address" value="${lead.address}" /></label>
+      <label>Business Name<input name="businessName" value="${escapeHtml(lead.businessName)}" required /></label>
+      <label>Brand Name<input name="brandName" value="${escapeHtml(lead.businessName)}" required /></label>
+      <label>Contact Person<input name="contactPerson" value="${escapeHtml(lead.contactPerson)}" /></label>
+      <label>Phone Number<input name="phone" value="${escapeHtml(lead.phone)}" /></label>
+      <label>WhatsApp Number<input name="whatsapp" value="${escapeHtml(lead.whatsapp)}" /></label>
+      <label>Address / Location<input name="address" value="${escapeHtml(lead.address)}" /></label>
 
       <div class="form-grid-2">
         <label>Advance Payment Date<input name="advanceDate" placeholder="02 May 2026" /></label>
@@ -1231,7 +1241,7 @@ function renderCustomerCreateFromLead(leadId) {
         <label>After Advance 1500ml<input name="afterAdvance1500" type="number" value="95.5" /></label>
       </div>
 
-      <label>Notes<textarea name="notes">${lead.notes || ""}</textarea></label>
+      <label>Notes<textarea name="notes">${escapeHtml(lead.notes || "")}</textarea></label>
 
       <button class="panel-save-btn" type="submit">
         <i class="bi bi-check2-circle"></i> Save Customer
@@ -1313,10 +1323,10 @@ function renderCustomerCompactList(filter = "all") {
       ${
         selectedCustomers.length
           ? selectedCustomers.map((customer) => `
-              <button class="compact-customer-item" data-customer-id="${customer.id}">
+              <button class="compact-customer-item" data-customer-id="${escapeHtml(customer.id)}">
                 <div>
-                  <div class="compact-customer-name">${customer.brandName || customer.businessName}</div>
-                  <div class="compact-customer-address">${customer.address}</div>
+                  <div class="compact-customer-name">${escapeHtml(customer.brandName || customer.businessName)}</div>
+                  <div class="compact-customer-address">${escapeHtml(customer.address)}</div>
                 </div>
                 <i class="bi bi-chevron-right"></i>
               </button>
@@ -1354,8 +1364,8 @@ function renderCustomerDetail(customerId, returnFilter = "all") {
   content.innerHTML = `
     <div class="customer-panel-head">
       <div>
-        <div class="customer-panel-title">${customer.brandName || customer.businessName}</div>
-        <div class="customer-panel-sub">${customer.id} • ${customer.address}</div>
+        <div class="customer-panel-title">${escapeHtml(customer.brandName || customer.businessName)}</div>
+        <div class="customer-panel-sub">${escapeHtml(customer.id)} • ${escapeHtml(customer.address)}</div>
       </div>
       <button class="panel-close-btn" id="closeCustomerPanel">
         <i class="bi bi-x-lg"></i>
@@ -1379,12 +1389,12 @@ function renderCustomerDetail(customerId, returnFilter = "all") {
 
       <div class="customer-detail-row">
         <div class="detail-label">Label Stock</div>
-        <div class="detail-value">Total ${totalLabelStock(customer)} • 500ml ${customer.stock500}, 1000ml ${customer.stock1000}, 1500ml ${customer.stock1500}</div>
+        <div class="detail-value">Total ${totalLabelStock(customer)} • 500ml ${escapeHtml(customer.stock500)}, 1000ml ${escapeHtml(customer.stock1000)}, 1500ml ${escapeHtml(customer.stock1500)}</div>
       </div>
 
       <div class="customer-detail-row">
         <div class="detail-label">Advance Payment</div>
-        <div class="detail-value">${formatCurrency(customer.advanceAmount)} on ${customer.advanceDate || "Not set"}</div>
+        <div class="detail-value">${formatCurrency(customer.advanceAmount)} on ${escapeHtml(customer.advanceDate || "Not set")}</div>
       </div>
 
       <div class="customer-detail-row">
@@ -1397,7 +1407,7 @@ function renderCustomerDetail(customerId, returnFilter = "all") {
 
       <div class="customer-detail-row">
         <div class="detail-label">Notes</div>
-        <div class="detail-value">${customer.notes || "No notes."}</div>
+        <div class="detail-value">${escapeHtml(customer.notes || "No notes.")}</div>
       </div>
     </div>
 
@@ -1405,13 +1415,13 @@ function renderCustomerDetail(customerId, returnFilter = "all") {
       <div class="reminder-title">WhatsApp Templates</div>
       <div class="reminder-text">Send order summary, pending payment reminder, or label stock reminder.</div>
       <div class="reminder-actions">
-        <a href="${whatsappLink(customer, customerSummaryMessage(customer))}" target="_blank">
+        <a href="${escapeHtml(whatsappLink(customer, customerSummaryMessage(customer)))}" target="_blank">
           <i class="bi bi-list-check"></i> Summary
         </a>
-        <a href="${whatsappLink(customer, pendingReminderMessage(customer))}" target="_blank">
+        <a href="${escapeHtml(whatsappLink(customer, pendingReminderMessage(customer)))}" target="_blank">
           <i class="bi bi-credit-card"></i> Pending
         </a>
-        <a href="${whatsappLink(customer, stockReminderMessage(customer))}" target="_blank">
+        <a href="${escapeHtml(whatsappLink(customer, stockReminderMessage(customer)))}" target="_blank">
           <i class="bi bi-tags"></i> Stock
         </a>
       </div>
@@ -1427,13 +1437,13 @@ function renderCustomerDetail(customerId, returnFilter = "all") {
         ? history.map((order) => `
           <div class="order-history-card">
             <div class="order-history-top">
-              <div class="order-date">${order.date}</div>
+              <div class="order-date">${escapeHtml(order.date)}</div>
               <div class="order-amount">${formatCurrency(order.total)}</div>
             </div>
             <div class="order-meta">
-              <div>${order.item} • Qty ${order.quantity}</div>
+              <div>${escapeHtml(order.item)} • Qty ${escapeHtml(order.quantity)}</div>
               <div>Paid: ${formatCurrency(order.paid)} • Pending: ${formatCurrency(order.pending)}</div>
-              <div>${order.note}</div>
+              <div>${escapeHtml(order.note)}</div>
             </div>
           </div>
         `).join("")
@@ -1458,7 +1468,7 @@ function renderCustomerEdit(customerId, returnFilter = "all") {
     <div class="customer-panel-head">
       <div>
         <div class="customer-panel-title">Edit Customer</div>
-        <div class="customer-panel-sub">${customer.brandName || customer.businessName}</div>
+        <div class="customer-panel-sub">${escapeHtml(customer.brandName || customer.businessName)}</div>
       </div>
       <button class="panel-close-btn" id="closeCustomerPanel">
         <i class="bi bi-x-lg"></i>
@@ -1466,50 +1476,50 @@ function renderCustomerEdit(customerId, returnFilter = "all") {
     </div>
 
     <form class="customer-edit-form" id="customerEditForm">
-      <label>Customer ID<input name="id" value="${customer.id}" required /></label>
-      <label>Business Name<input name="businessName" value="${customer.businessName}" required /></label>
-      <label>Brand Name<input name="brandName" value="${customer.brandName}" required /></label>
-      <label>Contact Person<input name="contactPerson" value="${customer.contactPerson}" /></label>
-      <label>Phone Number<input name="phone" value="${customer.phone}" /></label>
-      <label>WhatsApp Number<input name="whatsapp" value="${customer.whatsapp}" /></label>
-      <label>Address / Location<input name="address" value="${customer.address}" /></label>
+      <label>Customer ID<input name="id" value="${escapeHtml(customer.id)}" required /></label>
+      <label>Business Name<input name="businessName" value="${escapeHtml(customer.businessName)}" required /></label>
+      <label>Brand Name<input name="brandName" value="${escapeHtml(customer.brandName)}" required /></label>
+      <label>Contact Person<input name="contactPerson" value="${escapeHtml(customer.contactPerson)}" /></label>
+      <label>Phone Number<input name="phone" value="${escapeHtml(customer.phone)}" /></label>
+      <label>WhatsApp Number<input name="whatsapp" value="${escapeHtml(customer.whatsapp)}" /></label>
+      <label>Address / Location<input name="address" value="${escapeHtml(customer.address)}" /></label>
 
       <div class="form-grid-2">
-        <label>Advance Payment Date<input name="advanceDate" value="${customer.advanceDate}" /></label>
-        <label>Advance Amount<input name="advanceAmount" type="number" value="${customer.advanceAmount}" /></label>
+        <label>Advance Payment Date<input name="advanceDate" value="${escapeHtml(customer.advanceDate)}" /></label>
+        <label>Advance Amount<input name="advanceAmount" type="number" value="${escapeHtml(customer.advanceAmount)}" /></label>
       </div>
 
       <div class="form-grid-2">
-        <label>Pending Balance<input name="pendingBalance" type="number" value="${customer.pendingBalance}" /></label>
-        <label>Credit Balance<input name="creditBalance" type="number" value="${customer.creditBalance}" /></label>
+        <label>Pending Balance<input name="pendingBalance" type="number" value="${escapeHtml(customer.pendingBalance)}" /></label>
+        <label>Credit Balance<input name="creditBalance" type="number" value="${escapeHtml(customer.creditBalance)}" /></label>
       </div>
 
-      <label>Last Order Date<input name="lastOrderDate" value="${customer.lastOrderDate}" /></label>
-      <label>Last Contacted Date<input name="lastContactedDate" value="${customer.lastContactedDate}" /></label>
+      <label>Last Order Date<input name="lastOrderDate" value="${escapeHtml(customer.lastOrderDate)}" /></label>
+      <label>Last Contacted Date<input name="lastContactedDate" value="${escapeHtml(customer.lastContactedDate)}" /></label>
 
       <div class="form-grid-2">
-        <label>500ml Labels<input name="stock500" type="number" value="${customer.stock500}" /></label>
-        <label>1000ml Labels<input name="stock1000" type="number" value="${customer.stock1000}" /></label>
+        <label>500ml Labels<input name="stock500" type="number" value="${escapeHtml(customer.stock500)}" /></label>
+        <label>1000ml Labels<input name="stock1000" type="number" value="${escapeHtml(customer.stock1000)}" /></label>
       </div>
 
-      <label>1500ml Labels<input name="stock1500" type="number" value="${customer.stock1500}" /></label>
+      <label>1500ml Labels<input name="stock1500" type="number" value="${escapeHtml(customer.stock1500)}" /></label>
 
       <div class="form-grid-2">
-        <label>500ml Unit Price<input name="normal500" type="number" value="${customer.normal500}" /></label>
-        <label>After Advance 500ml<input name="afterAdvance500" type="number" value="${customer.afterAdvance500}" /></label>
-      </div>
-
-      <div class="form-grid-2">
-        <label>1000ml Unit Price<input name="normal1000" type="number" value="${customer.normal1000}" /></label>
-        <label>After Advance 1000ml<input name="afterAdvance1000" type="number" value="${customer.afterAdvance1000}" /></label>
+        <label>500ml Unit Price<input name="normal500" type="number" value="${escapeHtml(customer.normal500)}" /></label>
+        <label>After Advance 500ml<input name="afterAdvance500" type="number" value="${escapeHtml(customer.afterAdvance500)}" /></label>
       </div>
 
       <div class="form-grid-2">
-        <label>1500ml Unit Price<input name="normal1500" type="number" value="${customer.normal1500}" /></label>
-        <label>After Advance 1500ml<input name="afterAdvance1500" type="number" value="${customer.afterAdvance1500}" /></label>
+        <label>1000ml Unit Price<input name="normal1000" type="number" value="${escapeHtml(customer.normal1000)}" /></label>
+        <label>After Advance 1000ml<input name="afterAdvance1000" type="number" value="${escapeHtml(customer.afterAdvance1000)}" /></label>
       </div>
 
-      <label>Notes<textarea name="notes">${customer.notes || ""}</textarea></label>
+      <div class="form-grid-2">
+        <label>1500ml Unit Price<input name="normal1500" type="number" value="${escapeHtml(customer.normal1500)}" /></label>
+        <label>After Advance 1500ml<input name="afterAdvance1500" type="number" value="${escapeHtml(customer.afterAdvance1500)}" /></label>
+      </div>
+
+      <label>Notes<textarea name="notes">${escapeHtml(customer.notes || "")}</textarea></label>
 
       <button class="panel-save-btn" type="submit">
         <i class="bi bi-check2-circle"></i> Save Customer
@@ -1639,18 +1649,18 @@ function renderCashEntries() {
     <div class="cash-entry-card glass round-lg">
       <div class="cash-entry-top">
         <div>
-          <div class="cash-entry-title">${entry.customer || "General"}</div>
-          <div class="cash-entry-sub">${entry.date} • ${entry.method}</div>
+          <div class="cash-entry-title">${escapeHtml(entry.customer || "General")}</div>
+          <div class="cash-entry-sub">${escapeHtml(entry.date)} • ${escapeHtml(entry.method)}</div>
         </div>
-        <span class="cash-badge ${cashTypeClass(entry.type)}">${entry.type}</span>
+        <span class="cash-badge ${cashTypeClass(entry.type)}">${escapeHtml(entry.type)}</span>
       </div>
 
       <div class="cash-entry-info">
         <div><i class="bi bi-cash"></i> Amount: <strong class="cash-entry-amount ${isCashIn(entry.type) ? "in" : "out"}">${formatCurrency(entry.amount)}</strong></div>
-        <div><i class="bi bi-credit-card"></i> Method: <span class="cash-method-pill">${entry.method}</span></div>
+        <div><i class="bi bi-credit-card"></i> Method: <span class="cash-method-pill">${escapeHtml(entry.method)}</span></div>
       </div>
 
-      <div class="cash-entry-note">${entry.note || "No note."}</div>
+      <div class="cash-entry-note">${escapeHtml(entry.note || "No note.")}</div>
 
       <div class="cash-entry-actions">
         <button data-edit-cash="${entry.id}">
@@ -1747,18 +1757,18 @@ function renderCashEntryForm(entryId = null) {
 
       <label>
         Customer / Source
-        <input name="customer" value="${entry.customer}" placeholder="Cafe Aroma / Artline Printing" />
+        <input name="customer" value="${escapeHtml(entry.customer)}" placeholder="Cafe Aroma / Artline Printing" required />
       </label>
 
       <div class="form-grid-2">
         <label>
           Amount
-          <input name="amount" type="number" value="${entry.amount}" required />
+          <input name="amount" type="number" value="${escapeHtml(entry.amount)}" required />
         </label>
 
         <label>
           Date
-          <input name="date" value="${entry.date}" required />
+          <input name="date" value="${escapeHtml(entry.date)}" required />
         </label>
       </div>
 
@@ -1773,7 +1783,7 @@ function renderCashEntryForm(entryId = null) {
 
       <label>
         Note
-        <textarea name="note">${entry.note}</textarea>
+        <textarea name="note">${escapeHtml(entry.note)}</textarea>
       </label>
 
       <button class="panel-save-btn" type="submit">
@@ -1823,8 +1833,8 @@ function renderCashDetail(entryId) {
   content.innerHTML = `
     <div class="cash-panel-head">
       <div>
-        <div class="cash-panel-title">${entry.type}</div>
-        <div class="cash-panel-sub">${entry.date} • ${entry.method}</div>
+        <div class="cash-panel-title">${escapeHtml(entry.type)}</div>
+        <div class="cash-panel-sub">${escapeHtml(entry.date)} • ${escapeHtml(entry.method)}</div>
       </div>
       <button class="panel-close-btn" id="closeCashPanel">
         <i class="bi bi-x-lg"></i>
@@ -1843,7 +1853,7 @@ function renderCashDetail(entryId) {
     <div class="cash-detail-grid">
       <div class="cash-detail-row">
         <div class="detail-label">Customer / Source</div>
-        <div class="detail-value">${entry.customer || "General"}</div>
+        <div class="detail-value">${escapeHtml(entry.customer || "General")}</div>
       </div>
 
       <div class="cash-detail-row">
@@ -1853,17 +1863,17 @@ function renderCashDetail(entryId) {
 
       <div class="cash-detail-row">
         <div class="detail-label">Type</div>
-        <div class="detail-value">${entry.type}</div>
+        <div class="detail-value">${escapeHtml(entry.type)}</div>
       </div>
 
       <div class="cash-detail-row">
         <div class="detail-label">Payment Method</div>
-        <div class="detail-value">${entry.method}</div>
+        <div class="detail-value">${escapeHtml(entry.method)}</div>
       </div>
 
       <div class="cash-detail-row">
         <div class="detail-label">Note</div>
-        <div class="detail-value">${entry.note || "No note."}</div>
+        <div class="detail-value">${escapeHtml(entry.note || "No note.")}</div>
       </div>
     </div>
   `;
