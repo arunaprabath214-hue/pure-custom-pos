@@ -46,7 +46,7 @@
       {id:"CASH-002", type:"Collection", customer:"Cafe Aroma", amount:"12500", date:"2026-04-12", method:"Cash", note:"Partial payment collected."},
       {id:"CASH-003", type:"Expense", customer:"Artline Printing", amount:"8500", date:"2026-04-11", method:"Cash", note:"Label printing payment."}
     ],
-    bills: [], suppliers: [], purchases: [], expenses: [], bankRows: [],
+    bills: [], quotations: [], suppliers: [], purchases: [], expenses: [], bankRows: [],
     products: [
       {size:"500ml", cost:"35", normalPrice:"50", afterAdvancePrice:"47"},
       {size:"1000ml", cost:"58", normalPrice:"80", afterAdvancePrice:"75.5"},
@@ -56,7 +56,7 @@
   };
 
   const keyMap = {
-    leads:"pureLeads", customers:"pureCustomers", cashEntries:"pureCashEntries", bills:"pureBills", suppliers:"pureSuppliers", purchases:"purePurchases", products:"pureProducts", expenses:"pureExpenses", bankRows:"pureBankRows", settings:"pureSettings"
+    leads:"pureLeads", customers:"pureCustomers", cashEntries:"pureCashEntries", bills:"pureBills", quotations:"pureQuotations", suppliers:"pureSuppliers", purchases:"purePurchases", products:"pureProducts", expenses:"pureExpenses", bankRows:"pureBankRows", settings:"pureSettings"
   };
   const load = (name) => {
     try { return JSON.parse(localStorage.getItem(keyMap[name])) ?? structuredClone(defaults[name]); }
@@ -268,7 +268,7 @@
   function renderMore(){
     if(currentTool!=="menu") return renderTool(currentTool);
     const groups = [
-      ["Business Operations", [["bills","Bills / Invoices","Create bills, preview invoice and print.","bi-receipt-cutoff"],["suppliers","Suppliers","Supplier contacts and purchases.","bi-truck"],["products","Products & Prices","Bottle sizes, costs, margins.","bi-box-seam"],["expenses","Expenses","Salary, delivery, phone, other costs.","bi-wallet"]]],
+      ["Business Operations", [["quotations","Quotations","Create customer quotations and download PDF.","bi-file-earmark-text"],["bills","Bills / Invoices","Create bills, preview invoice and download PDF.","bi-receipt-cutoff"],["suppliers","Suppliers","Supplier contacts and purchases.","bi-truck"],["products","Products & Prices","Bottle sizes, costs, margins.","bi-box-seam"],["expenses","Expenses","Salary, delivery, phone, other costs.","bi-wallet"]]],
       ["Reports & Data", [["reports","Monthly Reports","Profit/loss, pending and stock alerts.","bi-bar-chart-line"],["bank","Bank CSV Import","Paste bank rows for reconciliation.","bi-bank"],["backup","Backup / Restore","Export, restore, reset or clear data.","bi-cloud-arrow-down"]]],
       ["System", [["settings","Settings","Business details and invoice footer.","bi-gear"],["about","About App","Version and module notes.","bi-info-circle"]]]
     ];
@@ -278,18 +278,45 @@
   function toolCard(key,title,sub,icon){return `<button class="tool-card glass" data-open-tool="${key}"><div class="tool-icon"><i class="bi ${icon}"></i></div><div><div class="tool-title">${title}</div><div class="tool-sub">${sub}</div></div><i class="bi bi-chevron-right"></i></button>`;}
   function openTool(key){ currentTool=key; switchTab("more"); }
   function renderTool(key){
-    const map={bills:toolBills,suppliers:toolSuppliers,products:toolProducts,expenses:toolExpenses,reports:toolReports,bank:toolBank,backup:toolBackup,settings:toolSettings,about:toolAbout};
+    const map={quotations:toolQuotations,bills:toolBills,suppliers:toolSuppliers,products:toolProducts,expenses:toolExpenses,reports:toolReports,bank:toolBank,backup:toolBackup,settings:toolSettings,about:toolAbout};
     screens.more.innerHTML = `<div class="module-head"><div><div class="module-title">${toolTitle(key)}</div><div class="module-sub">${toolSub(key)}</div></div><button class="ghost-btn" id="backToMore"><i class="bi bi-arrow-left"></i> Menu</button></div>${map[key]?map[key]():toolAbout()}`;
     $("#backToMore").onclick=()=>{currentTool="menu";renderMore();};
     bindTool(key);
   }
-  function toolTitle(k){return ({bills:"Bills / Invoices",suppliers:"Suppliers",products:"Products & Prices",expenses:"Expenses",reports:"Monthly Reports",bank:"Bank CSV Import",backup:"Backup / Restore",settings:"Settings",about:"About App"})[k]||"More";}
-  function toolSub(k){return ({bills:"Create customer bills and print invoices",suppliers:"Supplier contacts and purchase expenses",products:"Bottle pricing and margins",expenses:"Operational expenses",reports:"Monthly business snapshot",bank:"Paste CSV rows from bank statement",backup:"Protect or reset browser data",settings:"Business and invoice details",about:"Pure Custom Creation POS"})[k]||"";}
+  function toolTitle(k){return ({quotations:"Quotations",bills:"Bills / Invoices",suppliers:"Suppliers",products:"Products & Prices",expenses:"Expenses",reports:"Monthly Reports",bank:"Bank CSV Import",backup:"Backup / Restore",settings:"Settings",about:"About App"})[k]||"More";}
+  function toolSub(k){return ({quotations:"Create quotations and download PDFs",bills:"Create customer bills and download invoice PDFs",suppliers:"Supplier contacts and purchase expenses",products:"Bottle pricing and margins",expenses:"Operational expenses",reports:"Monthly business snapshot",bank:"Paste CSV rows from bank statement",backup:"Protect or reset browser data",settings:"Business and invoice details",about:"Pure Custom Creation POS"})[k]||"";}
+
+
+  function toolQuotations(){
+    const total=state.quotations.reduce((s,q)=>s+money(q.total),0);
+    return `<div class="kpi-grid">${kpi("Quotations",state.quotations.length)}${kpi("Total Value",rs(total))}</div><button class="top-add glass" id="newQuotationBtn"><i class="bi bi-plus-lg"></i> Create Quotation</button><div class="list-stack">${state.quotations.length?state.quotations.map(quoteCard).join(""):`<div class="empty-state section-card glass round-lg">No quotations yet.</div>`}</div>`;
+  }
+  function quoteCard(q){return `<div class="record-card glass round-lg"><div class="record-top"><div><div class="record-title">${esc(q.id)} • ${esc(q.customerName)}</div><div class="record-sub">${esc(q.date)} • ${esc(q.size)} • Qty ${esc(q.quantity)}</div></div><span class="badge">Quotation</span></div><div class="record-grid">${row("Total",rs(q.total))}${row("Unit",rs(q.unitPrice))}${row("Valid Until",q.validUntil||"-")}${row("Status",q.status||"Draft")}</div><div class="record-actions"><button class="small-btn" data-preview-quotation="${q.id}">Preview</button><button class="primary-btn" data-pdf-quotation="${q.id}">PDF</button></div></div>`;}
+  function quotationForm(){
+    const customerOptions = state.customers.map(c=>`<option value="${c.id}">${esc(c.brandName||c.businessName)}</option>`).join("");
+    if(!customerOptions){toast("Create a customer first");return;}
+    openOverlay("Create Quotation", `<form id="quotationForm" class="form-grid"><div class="field"><label>Customer</label><select name="customerId" id="quoteCustomer">${customerOptions}</select></div>${selectField("size","Bottle Size","500ml",["500ml","1000ml","1500ml"])}<div class="two-col">${formField("quantity","Quantity","100","number")}${formField("unitPrice","Unit Price","","number","step='0.01'")}</div><div class="two-col">${formField("date","Date",todayISO(),"date")}${formField("validUntil","Valid Until",todayISO(),"date")}</div>${textField("note","Note","")}<div class="section-card glass round-lg"><div class="record-grid">${row("Quotation Total","<span id='quoteTotalText'>Rs. 0</span>")}</div></div><div class="form-actions"><button class="ghost-btn" type="button" data-close>Cancel</button><button class="primary-btn" type="submit">Save Quotation</button></div></form>`, root=>{
+      const form=$("#quotationForm",root); const update=()=>{const c=state.customers.find(x=>x.id===form.customerId.value);const size=form.size.value;const field=`afterAdvance${size.replace('ml','')}`;if(document.activeElement!==form.unitPrice) form.unitPrice.value = c ? money(c[field]||0) : 0; const total=money(form.quantity.value)*money(form.unitPrice.value); $("#quoteTotalText",root).textContent=rs(total);};
+      form.customerId.onchange=update; form.size.onchange=update; form.quantity.oninput=update; form.unitPrice.oninput=update; update();
+      form.onsubmit=e=>{e.preventDefault();saveQuotation(formValues(form));}; $$('[data-close]',root).forEach(b=>b.onclick=closeOverlay);
+    });
+  }
+  function saveQuotation(v){
+    const c=state.customers.find(x=>x.id===v.customerId); if(!c) return;
+    const total=money(v.quantity)*money(v.unitPrice);
+    const quote={id:uid("QTN"), customerId:c.id, customerName:c.brandName||c.businessName, date:v.date, validUntil:v.validUntil, size:v.size, quantity:v.quantity, unitPrice:v.unitPrice, total:String(total), status:"Draft", note:v.note};
+    state.quotations.unshift(quote); saveAll(); closeOverlay(); currentTool="quotations"; renderAll(); toast("Quotation saved"); quotationPreview(quote.id);
+  }
+  function quotationPreview(id){
+    const q=state.quotations.find(x=>x.id===id); if(!q)return; const s=state.settings;
+    openOverlay("Quotation Preview", `<div class="invoice-preview"><h2>${esc(s.businessName)}</h2><p>${esc(s.address)}<br>${esc(s.phone)}</p><div class="invoice-row"><b>Quotation</b><span>${esc(q.id)}</span></div><div class="invoice-row"><b>Date</b><span>${esc(q.date)}</span></div><div class="invoice-row"><b>Valid Until</b><span>${esc(q.validUntil||"-")}</span></div><div class="invoice-row"><b>Customer</b><span>${esc(q.customerName)}</span></div><div class="invoice-row"><span>${esc(q.size)} custom bottles × ${esc(q.quantity)}</span><b>${rs(q.total)}</b></div><p style="font-size:12px;margin-top:14px">${esc(q.note||s.invoiceFooter)}</p></div><div class="form-actions no-print"><button class="primary-btn" id="downloadQuotationPdfBtn">Download PDF</button><button class="ghost-btn" data-close>Done</button></div>`, root=>{$("#downloadQuotationPdfBtn",root).onclick=()=>downloadDocumentPdf(id,"quotation"); $$('[data-close]',root).forEach(x=>x.onclick=closeOverlay);});
+  }
 
   function toolBills(){const paid=state.bills.reduce((s,b)=>s+money(b.paid),0), pend=state.bills.reduce((s,b)=>s+money(b.pending),0);return `<div class="kpi-grid">${kpi("Bills",state.bills.length)}${kpi("Paid",rs(paid))}${kpi("Pending",rs(pend))}${kpi("Total",rs(paid+pend))}</div><button class="top-add glass" id="newBillBtn"><i class="bi bi-plus-lg"></i> Create New Bill</button><div class="list-stack">${state.bills.length?state.bills.map(billCard).join(""):`<div class="empty-state section-card glass round-lg">No bills yet.</div>`}</div>`;}
-  function billCard(b){return `<div class="record-card glass round-lg"><div class="record-top"><div><div class="record-title">${esc(b.id)} • ${esc(b.customerName)}</div><div class="record-sub">${esc(b.date)} • ${esc(b.size)} • Qty ${esc(b.quantity)}</div></div><span class="badge ${money(b.pending)>0?'danger':'good'}">${money(b.pending)>0?'Pending':'Paid'}</span></div><div class="record-grid">${row("Total",rs(b.total))}${row("Paid",rs(b.paid))}${row("Pending",rs(b.pending))}${row("Unit",rs(b.unitPrice))}</div><div class="record-actions"><button class="small-btn" data-preview-bill="${b.id}">Preview</button><button class="primary-btn" data-print-bill="${b.id}">Print</button></div></div>`;}
+  function billCard(b){return `<div class="record-card glass round-lg"><div class="record-top"><div><div class="record-title">${esc(b.id)} • ${esc(b.customerName)}</div><div class="record-sub">${esc(b.date)} • ${esc(b.size)} • Qty ${esc(b.quantity)}</div></div><span class="badge ${money(b.pending)>0?'danger':'good'}">${money(b.pending)>0?'Pending':'Paid'}</span></div><div class="record-grid">${row("Total",rs(b.total))}${row("Paid",rs(b.paid))}${row("Pending",rs(b.pending))}${row("Unit",rs(b.unitPrice))}</div><div class="record-actions"><button class="small-btn" data-preview-bill="${b.id}">Preview</button><button class="small-btn" data-pdf-bill="${b.id}">PDF</button><button class="primary-btn" data-print-bill="${b.id}">Print</button></div></div>`;}
   function bindTool(key){
-    if(key==="bills"){ $("#newBillBtn")?.addEventListener("click",()=>billForm()); $$('[data-preview-bill]').forEach(b=>b.onclick=()=>invoicePreview(b.dataset.previewBill)); $$('[data-print-bill]').forEach(b=>b.onclick=()=>invoicePreview(b.dataset.printBill,true)); }
+    if(key==="quotations"){ $("#newQuotationBtn")?.addEventListener("click",()=>quotationForm()); $$('[data-preview-quotation]').forEach(b=>b.onclick=()=>quotationPreview(b.dataset.previewQuotation)); $$('[data-pdf-quotation]').forEach(b=>b.onclick=()=>downloadDocumentPdf(b.dataset.pdfQuotation,"quotation")); }
+    if(key==="bills"){ $("#newBillBtn")?.addEventListener("click",()=>billForm()); $$('[data-preview-bill]').forEach(b=>b.onclick=()=>invoicePreview(b.dataset.previewBill)); $$('[data-print-bill]').forEach(b=>b.onclick=()=>invoicePreview(b.dataset.printBill,true)); $$('[data-pdf-bill]').forEach(b=>b.onclick=()=>downloadDocumentPdf(b.dataset.pdfBill,"invoice")); }
     if(key==="suppliers"){ $("#newSupplierBtn")?.addEventListener("click",()=>supplierForm()); $("#newPurchaseBtn")?.addEventListener("click",()=>purchaseForm()); }
     if(key==="products"){ $("#productsForm")?.addEventListener("submit",saveProducts); }
     if(key==="expenses"){ $("#newExpenseBtn")?.addEventListener("click",()=>expenseForm()); }
@@ -318,7 +345,33 @@
   function invoicePreview(id, print=false){
     const b=state.bills.find(x=>x.id===id); if(!b)return; const s=state.settings;
     invoicePreviewId=id;
-    openOverlay("Invoice Preview", `<div class="invoice-preview"><h2>${esc(s.businessName)}</h2><p>${esc(s.address)}<br>${esc(s.phone)}</p><div class="invoice-row"><b>Invoice</b><span>${esc(b.id)}</span></div><div class="invoice-row"><b>Date</b><span>${esc(b.date)}</span></div><div class="invoice-row"><b>Customer</b><span>${esc(b.customerName)}</span></div><div class="invoice-row"><span>${esc(b.size)} custom bottles × ${esc(b.quantity)}</span><b>${rs(b.total)}</b></div><div class="invoice-row"><span>Paid</span><b>${rs(b.paid)}</b></div><div class="invoice-row"><span>Pending</span><b>${rs(b.pending)}</b></div><p style="font-size:12px;margin-top:14px">${esc(s.invoiceFooter)}</p></div><div class="form-actions no-print"><button class="primary-btn" id="printInvoiceBtn">Print</button><button class="ghost-btn" data-close>Done</button></div>`, root=>{$("#printInvoiceBtn",root).onclick=()=>window.print(); $$('[data-close]',root).forEach(x=>x.onclick=closeOverlay); if(print)setTimeout(()=>window.print(),200);});
+    openOverlay("Invoice Preview", `<div class="invoice-preview"><h2>${esc(s.businessName)}</h2><p>${esc(s.address)}<br>${esc(s.phone)}</p><div class="invoice-row"><b>Invoice</b><span>${esc(b.id)}</span></div><div class="invoice-row"><b>Date</b><span>${esc(b.date)}</span></div><div class="invoice-row"><b>Customer</b><span>${esc(b.customerName)}</span></div><div class="invoice-row"><span>${esc(b.size)} custom bottles × ${esc(b.quantity)}</span><b>${rs(b.total)}</b></div><div class="invoice-row"><span>Paid</span><b>${rs(b.paid)}</b></div><div class="invoice-row"><span>Pending</span><b>${rs(b.pending)}</b></div><p style="font-size:12px;margin-top:14px">${esc(s.invoiceFooter)}</p></div><div class="form-actions no-print"><button class="primary-btn" id="downloadInvoicePdfBtn">Download PDF</button><button class="small-btn" id="printInvoiceBtn">Print</button><button class="ghost-btn" data-close>Done</button></div>`, root=>{$("#downloadInvoicePdfBtn",root).onclick=()=>downloadDocumentPdf(id,"invoice"); $("#printInvoiceBtn",root).onclick=()=>window.print(); $$('[data-close]',root).forEach(x=>x.onclick=closeOverlay); if(print)setTimeout(()=>window.print(),200);});
+  }
+
+
+  function downloadDocumentPdf(id,type="invoice"){
+    const isQuote = type === "quotation";
+    const d = isQuote ? state.quotations.find(x=>x.id===id) : state.bills.find(x=>x.id===id);
+    if(!d){toast("Document not found");return;}
+    const lib = window.jspdf;
+    if(!lib || !lib.jsPDF){toast("PDF engine loading. Try again in a few seconds."); return;}
+    const doc = new lib.jsPDF({unit:"pt",format:"a4"});
+    const s = state.settings;
+    let y=52;
+    doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text(s.businessName || "Pure Custom Creation",40,y);
+    y+=18; doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text(String(s.address||""),40,y); y+=14; doc.text(String(s.phone||""),40,y);
+    y+=34; doc.setFont("helvetica","bold"); doc.setFontSize(18); doc.text(isQuote?"QUOTATION":"INVOICE",40,y); doc.setFontSize(11); doc.text(d.id,430,y);
+    y+=28; doc.setFont("helvetica","normal"); doc.text(`Date: ${d.date || ""}`,40,y); y+=18; if(isQuote){doc.text(`Valid Until: ${d.validUntil || ""}`,40,y); y+=18;} doc.text(`Customer: ${d.customerName || ""}`,40,y);
+    y+=32; doc.setDrawColor(220); doc.line(40,y,555,y); y+=24;
+    doc.setFont("helvetica","bold"); doc.text("Description",40,y); doc.text("Qty",330,y); doc.text("Unit",390,y); doc.text("Amount",470,y);
+    y+=12; doc.line(40,y,555,y); y+=24; doc.setFont("helvetica","normal");
+    doc.text(`${d.size} custom branded bottles`,40,y); doc.text(String(d.quantity||""),330,y); doc.text(rs(d.unitPrice),390,y); doc.text(rs(d.total),470,y);
+    y+=28; doc.line(40,y,555,y); y+=24; doc.setFont("helvetica","bold");
+    doc.text("Total",390,y); doc.text(rs(d.total),470,y);
+    if(!isQuote){y+=18; doc.text("Paid",390,y); doc.text(rs(d.paid),470,y); y+=18; doc.text("Pending",390,y); doc.text(rs(d.pending),470,y);}
+    y+=42; doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text(String(d.note || s.invoiceFooter || "Thank you."),40,y,{maxWidth:500});
+    doc.save(`${d.id}-${isQuote?"quotation":"invoice"}.pdf`);
+    toast("PDF downloaded");
   }
 
   function toolSuppliers(){return `<div class="form-actions"><button class="primary-btn" id="newSupplierBtn">Add Supplier</button><button class="ghost-btn" id="newPurchaseBtn">Record Purchase</button></div><div class="section-head"><h3>Suppliers</h3><span>${state.suppliers.length}</span></div><div class="list-stack">${state.suppliers.length?state.suppliers.map(s=>`<div class="record-card glass round-lg"><div class="record-title">${esc(s.name)}</div><div class="record-sub">${esc(s.phone)} • ${esc(s.category)} • ${esc(s.address)}</div></div>`).join(""):`<div class="empty-state section-card glass round-lg">No suppliers yet.</div>`}</div><div class="section-head"><h3>Purchases</h3><span>${state.purchases.length}</span></div><div class="list-stack">${state.purchases.map(p=>`<div class="record-card glass round-lg"><div class="record-top"><div><b>${esc(p.supplier)}</b><div class="record-sub">${esc(p.date)} • ${esc(p.note)}</div></div><span class="badge danger">${rs(p.amount)}</span></div></div>`).join("")}</div>`;}
